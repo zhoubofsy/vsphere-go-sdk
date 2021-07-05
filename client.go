@@ -3,19 +3,17 @@ package main
 import (
 	"bytes"
 	"io/ioutil"
-	"net"
 	"net/http"
-	xurl "net/url"
 	"time"
 )
 
-type VsphereClient struct {
+type Client struct {
 	httpClient *http.Client
 }
 
 // @param timeoutSec  timeout in seconds
-func GetVsphereClient(timeoutSec int) *VsphereClient {
-	cli := &VsphereClient{}
+func GetVsphereClient(timeoutSec int) *Client {
+	cli := &Client{}
 	cli.httpClient = &http.Client{
 		Timeout: time.Duration(timeoutSec) * time.Second,
 	}
@@ -24,7 +22,7 @@ func GetVsphereClient(timeoutSec int) *VsphereClient {
 
 //Url中要把需要的参数param都拼接进去
 //method需要写POST/GET/DELETE等参数
-func (c *VsphereClient)  sendRequest(url string,headers map[string]string,body []byte,method string) ([]byte,error) {
+func (c *Client)  sendRequest(url string,headers map[string]string,body []byte,method string) ([]byte,error) {
 	ioReader := bytes.NewReader(body)
 	req, err := http.NewRequest(method, url, ioReader)
 	if err != nil {
@@ -43,10 +41,4 @@ func (c *VsphereClient)  sendRequest(url string,headers map[string]string,body [
 
 	defer res.Body.Close()
 	return ioutil.ReadAll(res.Body)
-}
-
-func getHostFromUrl(url string) string {
-	u, _ := xurl.Parse(url)
-	host, _, _ := net.SplitHostPort(u.Host)
-	return host
 }
