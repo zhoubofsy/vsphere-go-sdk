@@ -1,4 +1,4 @@
-package main
+package vsphere
 
 import (
 	"bytes"
@@ -7,13 +7,22 @@ import (
 	"time"
 )
 
-type Client struct {
-	httpClient *http.Client
+type client interface {
+	sendRequest(url string,headers map[string]string,body []byte,method string) ([]byte,error)
+}
+func  GetClient(clientType string) client {
+	if clientType == "REST" {
+		return &HttpClient{}
+	}
+	return &HttpClient{}
 }
 
+type HttpClient struct {
+	httpClient *http.Client
+}
 // @param timeoutSec  timeout in seconds
-func GetVsphereClient(timeoutSec int) *Client {
-	cli := &Client{}
+func (c *HttpClient) GetClient(timeoutSec int) *HttpClient {
+	cli := &HttpClient{}
 	cli.httpClient = &http.Client{
 		Timeout: time.Duration(timeoutSec) * time.Second,
 	}
@@ -22,7 +31,7 @@ func GetVsphereClient(timeoutSec int) *Client {
 
 //Url中要把需要的参数param都拼接进去
 //method需要写POST/GET/DELETE等参数
-func (c *Client)  sendRequest(url string,headers map[string]string,body []byte,method string) ([]byte,error) {
+func (c *HttpClient)  sendRequest(url string,headers map[string]string,body []byte,method string) ([]byte,error) {
 	ioReader := bytes.NewReader(body)
 	req, err := http.NewRequest(method, url, ioReader)
 	if err != nil {
