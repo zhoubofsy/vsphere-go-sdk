@@ -1,0 +1,2 @@
+# vsphere-sdk-go
+
