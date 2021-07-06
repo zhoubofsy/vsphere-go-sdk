@@ -5,13 +5,14 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+	"vsphere-sdk-go/config"
 )
 
 type client interface {
-	sendRequest(url string,headers map[string]string,body []byte,method string) ([]byte,error)
+	SendRequest(url string,headers map[string]string,body []byte,method string) (*ResponseResult,error)
 }
 func  GetClient() client {
-	return GetRESTClient(10)
+	return GetRESTClient(config.TIMEOUT)
 }
 
 type HttpClient struct {
@@ -28,13 +29,12 @@ func GetRESTClient(timeoutSec int) *HttpClient {
 
 //Url中要把需要的参数param都拼接进去
 //method需要写POST/GET/DELETE等参数
-func (c *HttpClient)  sendRequest(url string,headers map[string]string,body []byte,method string) ([]byte,error) {
+func (c *HttpClient)  SendRequest(url string,headers map[string]string,body []byte,method string) (*ResponseResult,error) {
 	ioReader := bytes.NewReader(body)
 	req, err := http.NewRequest(method, url, ioReader)
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
-
 	//给请求添加header
 	for key,value:=range headers {
 		req.Header.Add(key,value)
@@ -42,9 +42,15 @@ func (c *HttpClient)  sendRequest(url string,headers map[string]string,body []by
 	//发起请求
 	res, err := c.httpClient.Do(req)
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
-
 	defer res.Body.Close()
-	return ioutil.ReadAll(res.Body)
+	data,err:=ioutil.ReadAll(res.Body)
+	result := &ResponseResult{res.StatusCode, data}
+	return result,err
+}
+
+type ResponseResult struct {
+	Status int
+	Data []byte
 }
