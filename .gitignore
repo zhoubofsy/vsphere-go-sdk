@@ -1,2 +1,4 @@
 /.idea/
 /*.sum/
+*.swp
+go.sum
