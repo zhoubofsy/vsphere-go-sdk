@@ -1,4 +1,4 @@
-module vsphere-sdk-go
+module vsphere-go-sdk
 
 go 1.15
 
