@@ -2,6 +2,7 @@ package cis
 
 import (
 	b64 "encoding/base64"
+	"encoding/json"
 	"vsphere-go-sdk/common"
 )
 
@@ -62,7 +63,7 @@ type cis struct {
 }
 
 func (o *cis) GetSessionHandle() *session {
-	return o.s
+	return &(o.s)
 }
 
 func NewCIS(host string) *cis {
