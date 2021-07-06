@@ -2,7 +2,7 @@ package content
 
 import "fmt"
 
-type LibraryOperation interface {
+type Operation interface {
 	Get() (*Library,error)
 }
 
@@ -19,7 +19,7 @@ func Diaoyong() (*Library, error) {
 	pp := &Library{
 		value: "test",
 	}
-	var lib LibraryOperation = pp
+	var lib Operation = pp
 	fmt.Println("Before", pp)
 	methodMap := map[string]interface{}{
 		"Get": lib.Get(),

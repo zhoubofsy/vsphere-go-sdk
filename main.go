@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	client := common.GetClient()
+	client := common.NewClient()
 
 	url := "http://localhost:8088/v1/user/login"
 

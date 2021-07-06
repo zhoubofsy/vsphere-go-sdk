@@ -10,15 +10,15 @@ import (
 type Client interface {
 	SendRequest(url string,headers map[string]string,body []byte,method string) (*ResponseResult,error)
 }
-func  GetClient() Client {
-	return GetRESTClient(TIMEOUT)
+func  NewClient() Client {
+	return NewRESTClient(TIMEOUT)
 }
 
 type HttpClient struct {
 	httpClient *http.Client
 }
 // @param timeoutSec  timeout in seconds
-func GetRESTClient(timeoutSec int) *HttpClient {
+func NewRESTClient(timeoutSec int) *HttpClient {
 	cli := &HttpClient{}
 	cli.httpClient = &http.Client{
 		Timeout: time.Duration(timeoutSec) * time.Second,
