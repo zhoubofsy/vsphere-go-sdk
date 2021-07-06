@@ -2,11 +2,11 @@ package main
 
 import (
 	"log"
-	"vsphere-sdk-go/vsphere"
+	"vsphere-sdk-go/common"
 )
 
 func main() {
-	client := vsphere.GetClient()
+	client := common.GetClient()
 
 	url := "http://localhost:8088/v1/user/login"
 

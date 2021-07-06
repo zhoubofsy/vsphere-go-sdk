@@ -1,18 +1,17 @@
-package vsphere
+package common
 
 import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
 	"time"
-	"vsphere-sdk-go/config"
 )
 
 type Client interface {
 	SendRequest(url string,headers map[string]string,body []byte,method string) (*ResponseResult,error)
 }
 func  GetClient() Client {
-	return GetRESTClient(config.TIMEOUT)
+	return GetRESTClient(TIMEOUT)
 }
 
 type HttpClient struct {
