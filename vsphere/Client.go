@@ -8,10 +8,10 @@ import (
 	"vsphere-sdk-go/config"
 )
 
-type client interface {
+type Client interface {
 	SendRequest(url string,headers map[string]string,body []byte,method string) (*ResponseResult,error)
 }
-func  GetClient() client {
+func  GetClient() Client {
 	return GetRESTClient(config.TIMEOUT)
 }
 
