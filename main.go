@@ -1,21 +1,21 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
+	"vsphere-sdk-go/vsphere"
 )
 
 func main() {
-	vsphereClient := GetVsphereClient(10)
+	client := vsphere.GetClient()
 
-	url := "http://127.0.0.1:8088/v1/user"
+	url := "http://localhost:8088/v1/user/login"
 
-	headers:=make(map[string]string)
-	headers["session"]="test"
+	//headers:=make(map[string]string)
+	//headers["session"]="test"
 	method:="GET"
-	testBody:="gdhsdsdsghd"
-	body,_:=json.Marshal(testBody)
-	resBody,_:=vsphereClient.sendRequest(url,headers,body,method)
+	//testBody:="gdhsdsdsghd"
+	//body,_:=json.Marshal(testBody)
+	resBody,_:=client.SendRequest(url,nil,nil,method)
 	log.Println(resBody)
 
 }
