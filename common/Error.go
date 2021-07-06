@@ -1,4 +1,4 @@
-package vsphere
+package common
 
 // Error basic error info for IAAS
 type Error struct {

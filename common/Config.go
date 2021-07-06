@@ -1,4 +1,4 @@
-package config
+package common
 
 const (
 	//httpclient设置超时时间
