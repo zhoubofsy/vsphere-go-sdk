@@ -2,5 +2,5 @@ package common
 
 const (
 	//httpclient设置超时时间
-	TIMEOUT=10
+	TIMEOUT = 300
 )
