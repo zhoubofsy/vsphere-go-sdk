@@ -6,19 +6,19 @@ import (
 	"vsphere-go-sdk/common"
 )
 
-type session struct {
-	addr string
-	uri  string
+type Session struct {
+	client common.Client
+	uri    string
 }
 
 type CreateSessionResponse struct {
 	value string `json:"value"`
 }
 
-func (o *session) CreateSession(basic string) (string, *common.Error) {
+func (o *Session) CreateSession(basic string) (string, *common.Error) {
 	header := make(map[string]string)
 	header["Authorization"] = "Basic " + basic
-	resp, err := common.NewClient().SendRequest(o.addr+o.uri, header, nil, "POST")
+	resp, err := o.client.SendRequest(o.uri, header, nil, "POST")
 	if err != nil {
 		return "", common.ESENDREQUEST
 	}
@@ -39,10 +39,10 @@ func (o *session) CreateSession(basic string) (string, *common.Error) {
 	return response.value, common.EOK
 }
 
-func (o *session) DeleteSession(basic string) *common.Error {
+func (o *Session) DeleteSession(basic string) *common.Error {
 	header := make(map[string]string)
 	header["Authorization"] = "Basic " + basic
-	resp, err := common.NewClient().SendRequest(o.addr+o.uri, header, nil, "DELETE")
+	resp, err := o.client.SendRequest(o.uri, header, nil, "DELETE")
 	if err != nil {
 		return common.ESENDREQUEST
 	}
@@ -58,19 +58,19 @@ func (o *session) DeleteSession(basic string) *common.Error {
 	return common.EOK
 }
 
-type cis struct {
-	s session
+type CIS struct {
+	s Session
 }
 
-func (o *cis) GetSessionHandle() *session {
+func (o *CIS) GetSessionHandle() *Session {
 	return &(o.s)
 }
 
-func NewCIS(host string) *cis {
-	return &cis{
-		s: session{
-			addr: host,
-			uri:  "/rest/com/vmware/cis/session",
+func NewCIS(c common.Client) *CIS {
+	return &CIS{
+		s: Session{
+			client: c,
+			uri:    "/rest/com/vmware/cis/session",
 		},
 	}
 }
