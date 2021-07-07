@@ -3,6 +3,7 @@ package cis
 import (
 	b64 "encoding/base64"
 	"encoding/json"
+	log "github.com/sirupsen/logrus"
 	"vsphere-go-sdk/common"
 )
 
@@ -11,15 +12,12 @@ type Session struct {
 	uri    string
 }
 
-type CreateSessionResponse struct {
-	value string `json:"value"`
-}
-
 func (o *Session) CreateSession(basic string) (string, *common.Error) {
 	header := make(map[string]string)
 	header["Authorization"] = "Basic " + basic
 	resp, err := o.client.SendRequest(o.uri, header, nil, "POST")
 	if err != nil {
+		log.Error("SendRequestError: ", err)
 		return "", common.ESENDREQUEST
 	}
 	if resp.Status != 200 {
@@ -31,17 +29,19 @@ func (o *Session) CreateSession(basic string) (string, *common.Error) {
 		}
 		return "", common.EUNKNOW
 	}
-	response := CreateSessionResponse{}
+	log.WithFields(log.Fields{"ResponseData": string(resp.Data)}).Debug("CreateSession")
+	response := make(map[string]string)
 	err = json.Unmarshal(resp.Data, &response)
 	if err != nil {
 		return "", common.EUNMARSHAL
 	}
-	return response.value, common.EOK
+	log.WithFields(log.Fields{"response: ": response}).Debug("CreateSessionResponse")
+	return response["value"], common.EOK
 }
 
-func (o *Session) DeleteSession(basic string) *common.Error {
+func (o *Session) DeleteSession(sessid string) *common.Error {
 	header := make(map[string]string)
-	header["Authorization"] = "Basic " + basic
+	header["vmware-api-session-id"] = sessid
 	resp, err := o.client.SendRequest(o.uri, header, nil, "DELETE")
 	if err != nil {
 		return common.ESENDREQUEST
@@ -70,7 +70,7 @@ func NewCIS(c common.Client) *CIS {
 	return &CIS{
 		s: Session{
 			client: c,
-			uri:    "/rest/com/vmware/cis/session",
+			uri:    "com/vmware/cis/session",
 		},
 	}
 }
