@@ -1,2 +1,2 @@
-# vsphere-sdk-go
+# vsphere-go-sdk
 
