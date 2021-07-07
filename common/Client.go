@@ -2,6 +2,7 @@ package common
 
 import (
 	"bytes"
+	"crypto/tls"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -24,10 +25,15 @@ type HttpClient struct {
 
 // @param timeoutSec  timeout in seconds
 func NewRESTClient(host string, timeoutSec int) *HttpClient {
+	//avoid to have secure verify
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	cli := &HttpClient{}
 	cli.host = host
 	cli.httpClient = &http.Client{
 		Timeout: time.Duration(timeoutSec) * time.Second,
+		Transport: tr,
 	}
 	return cli
 }
@@ -44,12 +50,12 @@ func (c *HttpClient) SendRequest(uri string, headers map[string]string, body []b
 		log.WithFields(log.Fields{"err": err}).Error("http.NewRequest")
 		return nil, err
 	}
-	//给请求添加header
+	//add header
 	for key, value := range headers {
 		req.Header.Add(key, value)
 	}
 	log.WithFields(log.Fields{"Request": req}).Debug("http.NewRequest")
-	//发起请求
+	//send request
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		log.WithFields(log.Fields{"err": err}).Error("http.Do")
