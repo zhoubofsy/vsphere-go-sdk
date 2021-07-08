@@ -11,7 +11,7 @@ func (o *Content) GetLibraryHandle() *Library {
 }
 
 func NewContent(c common.Client, sid string) *Content {
-	conn := common.Connector{Client: c, Sid: sid}
+	conn := common.Connector{Invoker: c, Sid: sid}
 	return &Content{
 		Library{
 			uri:  "com/vmware/content/library",

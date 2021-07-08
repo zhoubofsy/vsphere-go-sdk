@@ -5,6 +5,7 @@ import (
 	"os"
 	"vsphere-go-sdk/cis"
 	"vsphere-go-sdk/common"
+	"vsphere-go-sdk/content"
 	"vsphere-go-sdk/vcenter"
 )
 
