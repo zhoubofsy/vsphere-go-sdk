@@ -6,7 +6,7 @@ type Content struct {
 	library Library
 }
 
-func (o *Content) GetSessionHandle() *Library {
+func (o *Content) GetLibraryHandle() *Library {
 	return &(o.library)
 }
 

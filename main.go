@@ -5,6 +5,7 @@ import (
 	"os"
 	"vsphere-go-sdk/cis"
 	"vsphere-go-sdk/common"
+	"vsphere-go-sdk/content"
 )
 
 func common_test() {
@@ -20,6 +21,21 @@ func common_test() {
 	resBody, _ := client.SendRequest(url, nil, nil, method)
 	log.Debug(resBody)
 
+}
+
+func content_test()  {
+	client := common.NewClient("https://128.179.0.241/rest/")
+	log.Debug(client)
+	sid:=""
+	c:=content.NewContent(client,sid)
+	log.Debug(*c)
+	shandle:=c.GetLibraryHandle()
+	strs,err:=shandle.Get()
+	log.Debug("GetLibraryList: ", strs, err)
+
+	i:=shandle.NewItem()
+	strss,err:=i.GetByLibraryID(strs[0])
+	log.Debug("GetItemByLibraryId: ", strss, err)
 }
 
 func cis_test() {
@@ -50,4 +66,7 @@ func main() {
 
 	// test cis module
 	cis_test()
+
+	//test content moudle
+	content_test()
 }
