@@ -14,7 +14,7 @@ type Library struct {
 func (l *Library) Get() ([]string, *common.Error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = l.conn.Sid
-	resp, err := l.conn.Client.SendRequest(l.uri, header, nil, "GET")
+	resp, err := l.conn.Invoker.SendRequest(l.uri, header, nil, "GET")
 	if err != nil {
 		log.Error("SendRequestError: ", err)
 		return nil, common.ESENDREQUEST
@@ -53,7 +53,7 @@ type Item struct {
 func (i *Item) GetByLibraryID(libraryId string) ([]string, *common.Error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = i.conn.Sid
-	resp, err := i.conn.Client.SendRequest(i.uri+"?library_id="+libraryId, header, nil, "GET")
+	resp, err := i.conn.Invoker.SendRequest(i.uri+"?library_id="+libraryId, header, nil, "GET")
 	if err != nil {
 		log.Error("SendRequestError: ", err)
 		return nil, common.ESENDREQUEST
