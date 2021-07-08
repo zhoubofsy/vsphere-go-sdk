@@ -17,10 +17,11 @@ func (o *Session) CreateSession(basic string) (string, *common.Error) {
 	header["Authorization"] = "Basic " + basic
 	resp, err := o.client.SendRequest(o.uri, header, nil, "POST")
 	if err != nil {
-		log.Error("SendRequestError: ", err)
+		log.WithFields(log.Fields{"Error": err}).Error("CreateSession")
 		return "", common.ESENDREQUEST
 	}
 	if resp.Status != 200 {
+		log.WithFields(log.Fields{"Response": resp}).Error("CreateSession")
 		switch resp.Status {
 		case 401:
 			return "", common.EUNAUTHORED
@@ -29,13 +30,12 @@ func (o *Session) CreateSession(basic string) (string, *common.Error) {
 		}
 		return "", common.EUNKNOW
 	}
-	log.WithFields(log.Fields{"ResponseData": string(resp.Data)}).Debug("CreateSession")
 	response := make(map[string]string)
 	err = json.Unmarshal(resp.Data, &response)
 	if err != nil {
+		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("CreateSession")
 		return "", common.EUNMARSHAL
 	}
-	log.WithFields(log.Fields{"response: ": response}).Debug("CreateSessionResponse")
 	return response["value"], common.EOK
 }
 
@@ -44,9 +44,11 @@ func (o *Session) DeleteSession(sessid string) *common.Error {
 	header["vmware-api-session-id"] = sessid
 	resp, err := o.client.SendRequest(o.uri, header, nil, "DELETE")
 	if err != nil {
+		log.WithFields(log.Fields{"Error": err}).Error("DeleteSession")
 		return common.ESENDREQUEST
 	}
 	if resp.Status != 200 {
+		log.WithFields(log.Fields{"Response": resp}).Error("DeleteSession")
 		switch resp.Status {
 		case 401:
 			return common.EUNAUTHORED
