@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+type Connector struct {
+	client Client
+	sid    string
+}
+
 type Client interface {
 	SendRequest(url string, headers map[string]string, body []byte, method string) (*ResponseResult, error)
 }
@@ -32,7 +37,7 @@ func NewRESTClient(host string, timeoutSec int) *HttpClient {
 	cli := &HttpClient{}
 	cli.host = host
 	cli.httpClient = &http.Client{
-		Timeout: time.Duration(timeoutSec) * time.Second,
+		Timeout:   time.Duration(timeoutSec) * time.Second,
 		Transport: tr,
 	}
 	return cli
