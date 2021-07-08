@@ -10,8 +10,8 @@ import (
 )
 
 type Connector struct {
-	client Client
-	sid    string
+	Client Client
+	Sid    string
 }
 
 type Client interface {

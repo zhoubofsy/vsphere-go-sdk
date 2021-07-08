@@ -2,11 +2,6 @@ package content
 
 import "vsphere-go-sdk/common"
 
-type Connection struct {
-	client *common.Client
-	sid string
-}
-
 type Content struct {
 	library Library
 }
@@ -16,10 +11,10 @@ func (o *Content) GetSessionHandle() *Library {
 }
 
 func NewContent(c common.Client,sid string) *Content {
-	conn:= &Connection{client: c, sid: sid}
+	conn:= common.Connector{Client: c, Sid: sid}
 	return &Content{
 		Library{
-			uri:  "com/vmware/cis/session",
+			uri:  "com/vmware/content/library",
 			conn: conn,
 		},
 	}
