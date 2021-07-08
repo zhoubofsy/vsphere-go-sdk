@@ -5,7 +5,7 @@ import (
 	"os"
 	"vsphere-go-sdk/cis"
 	"vsphere-go-sdk/common"
-	"vsphere-go-sdk/content"
+	"vsphere-go-sdk/vcenter"
 )
 
 func common_test() {
@@ -59,14 +59,26 @@ func cis_test() {
 	log.Debug("DeleteSession: ", err)
 }
 
+func vcenter_test() {
+	client := common.NewClient("https://128.179.0.241/rest/")
+	sess, err := cis.NewCIS(client).GetSessionHandle().CreateSession(cis.CodeBase64("root@vsphere.local", "Root@2021"))
+
+	vc := vcenter.NewVCenter(client, sess)
+	vm := vc.NewVM()
+	vms, err := vm.ListVMs()
+	log.Debug("VMs: ", vms, err)
+
+	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
+}
+
 func main() {
 	log.SetOutput(os.Stdout)     //设置日志的输出为标准输出
 	log.SetLevel(log.DebugLevel) //设置日志的显示级别，这一级别以及更高级别的日志信息将会输出
 	log.SetReportCaller(true)    //设置日志的调用文件，调用函数
 
 	// test cis module
-	cis_test()
+	//cis_test()
 
-	//test content moudle
-	content_test()
+	// test vcenter module
+	vcenter_test()
 }
