@@ -23,6 +23,21 @@ func common_test() {
 
 }
 
+func content_test()  {
+	client := common.NewClient("https://128.179.0.241/rest/")
+	log.Debug(client)
+	sid:=""
+	c:=content.NewContent(client,sid)
+	log.Debug(*c)
+	shandle:=c.GetLibraryHandle()
+	strs,err:=shandle.Get()
+	log.Debug("GetLibraryList: ", strs, err)
+
+	i:=shandle.NewItem()
+	strss,err:=i.GetByLibraryID(strs[0])
+	log.Debug("GetItemByLibraryId: ", strss, err)
+}
+
 func cis_test() {
 	code := cis.CodeBase64("root@vsphere.local", "Root@2021")
 	log.Debug("base64:", code)
