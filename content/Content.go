@@ -10,8 +10,8 @@ func (o *Content) GetSessionHandle() *Library {
 	return &(o.library)
 }
 
-func NewContent(c common.Client,sid string) *Content {
-	conn:= common.Connector{Client: c, Sid: sid}
+func NewContent(c common.Client, sid string) *Content {
+	conn := common.Connector{Client: c, Sid: sid}
 	return &Content{
 		Library{
 			uri:  "com/vmware/content/library",
