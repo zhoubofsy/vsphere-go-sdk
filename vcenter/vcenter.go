@@ -27,3 +27,11 @@ func (o *VCenter) NewVM() *VM {
 	}
 	return v
 }
+
+func (o *VCenter) NewFolder() *Folder {
+	f := &Folder{
+		con: o.con,
+		uri: o.uri + "/folder",
+	}
+	return f
+}
