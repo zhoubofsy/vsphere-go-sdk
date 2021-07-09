@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	log "github.com/sirupsen/logrus"
 	"os"
 	"vsphere-go-sdk/cis"
@@ -24,18 +25,18 @@ func common_test() {
 
 }
 
-func content_test()  {
+func content_test() {
 	client := common.NewClient("https://128.179.0.241/rest/")
 	log.Debug(client)
 	sess, err := cis.NewCIS(client).GetSessionHandle().CreateSession(cis.CodeBase64("root@vsphere.local", "Root@2021"))
-	c:=content.NewContent(client,sess)
-	l:=c.NewLibrary()
+	c := content.NewContent(client, sess)
+	l := c.NewLibrary()
 	log.Debug(*c)
-	strs,err:=l.ListLibraries()
+	strs, err := l.ListLibraries()
 	log.Debug("GetLibraryList: ", strs, err)
 
-	i:=l.NewItem()
-	strss,err:=i.GetItemByLibraryID(strs[0])
+	i := l.NewItem()
+	strss, err := i.GetItemByLibraryID(strs[0])
 	log.Debug("GetItemByLibraryId: ", strss, err)
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }
@@ -70,24 +71,39 @@ func vcenter_test() {
 	vms, err := vm.ListVMs()
 	log.Debug("VMs: ", vms, err)
 
-	vmi, err := vm.GetVMInfo("vm-80")
+	vmi, err := vm.GetVMInfo(vms[0].Vm)
 	log.Debug("VMI: ", vmi, err)
 
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }
 
 func main() {
+	TestModule := ""
+	help := false
+	flag.StringVar(&TestModule, "t", "", "Test Module. eg: cis , vcenter , content")
+	flag.BoolVar(&help, "h", false, "Show Usage.")
+	flag.Parse()
+
 	log.SetOutput(os.Stdout)     //设置日志的输出为标准输出
 	log.SetLevel(log.DebugLevel) //设置日志的显示级别，这一级别以及更高级别的日志信息将会输出
 	log.SetReportCaller(true)    //设置日志的调用文件，调用函数
 
-	// test cis module
-	//cis_test()
+	if help {
+		flag.Usage()
+		return
+	}
 
-	// test vcenter module
-	//vcenter_test()
+	switch TestModule {
+	case "cis":
+		// test cis module
+		cis_test()
+	case "vcenter":
+		// test vcenter module
+		vcenter_test()
+	case "content":
+		//test content moudle
+		content_test()
+	}
 
-	//test content moudle
-	content_test()
-
+	flag.Usage()
 }
