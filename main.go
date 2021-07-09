@@ -70,6 +70,9 @@ func vcenter_test() {
 	vms, err := vm.ListVMs()
 	log.Debug("VMs: ", vms, err)
 
+	vmi, err := vm.GetVMInfo("vm-80")
+	log.Debug("VMI: ", vmi, err)
+
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }
 
