@@ -1,4 +1,5 @@
-/.idea/
-/*.sum/
+.idea/
+*.sum
+*.exe
 *.swp
-go.sum
+vsphere-go-sdk.exe

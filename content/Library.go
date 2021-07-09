@@ -7,11 +7,11 @@ import (
 )
 
 type Library struct {
-	conn common.Connector
+	conn *common.Connector
 	uri  string
 }
 
-func (l *Library) Get() ([]string, *common.Error) {
+func (l *Library) ListLibraries() ([]string, *common.Error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = l.conn.Sid
 	resp, err := l.conn.Invoker.SendRequest(l.uri, header, nil, "GET")
@@ -46,11 +46,11 @@ func (l *Library) NewItem() *Item {
 }
 
 type Item struct {
-	conn common.Connector
+	conn *common.Connector
 	uri  string
 }
 
-func (i *Item) GetByLibraryID(libraryId string) ([]string, *common.Error) {
+func (i *Item) GetItemByLibraryID(libraryId string) ([]string, *common.Error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = i.conn.Sid
 	resp, err := i.conn.Invoker.SendRequest(i.uri+"?library_id="+libraryId, header, nil, "GET")
