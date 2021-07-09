@@ -68,11 +68,11 @@ func vcenter_test() {
 
 	vc := vcenter.NewVCenter(client, sess)
 	vm := vc.NewVM()
-	vms, err := vm.ListVMs()
+	vms, err := vm.List()
 	log.Debug("VMs: ", vms, err)
 	log.Debug("================================================")
 
-	vmi, err := vm.GetVMInfo(vms[0].Vm)
+	vmi, err := vm.Get(vms[0].Vm)
 	log.Debug("VMI: ", vmi, err)
 	log.Debug("================================================")
 

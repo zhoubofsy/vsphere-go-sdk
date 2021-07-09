@@ -14,7 +14,7 @@ type VM struct {
 	uri string
 }
 
-type VMResult struct {
+type ListVMResult struct {
 	Vm         string `json:"vm"`
 	Name       string `json:"name"`
 	PowerState string `json:"power_state"`
@@ -22,11 +22,11 @@ type VMResult struct {
 	MemSizeMiB int    `json:"memory_size_MiB"`
 }
 
-type ListVMsResult struct {
-	Value []VMResult `json:"value"`
+type ValueOfListVMsResult struct {
+	Value []ListVMResult `json:"value"`
 }
 
-func (o *VM) ListVMs() ([]VMResult, *common.Error) {
+func (o *VM) List() ([]ListVMResult, *common.Error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = o.con.Sid
 	resp, err := o.con.Invoker.SendRequest(o.uri, header, nil, "GET")
@@ -42,7 +42,7 @@ func (o *VM) ListVMs() ([]VMResult, *common.Error) {
 		}
 		return nil, common.EUNKNOW
 	}
-	vms := ListVMsResult{}
+	vms := ValueOfListVMsResult{}
 	err = json.Unmarshal(resp.Data, &vms)
 	if err != nil {
 		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("ListVMs")
@@ -267,7 +267,7 @@ type ValueOfVMInfo struct {
 	Value VMInfo `json:"value"`
 }
 
-func (o *VM) GetVMInfo(vm string) (*VMInfo, *common.Error) {
+func (o *VM) Get(vm string) (*VMInfo, *common.Error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = o.con.Sid
 	uri := o.uri + "/" + vm
