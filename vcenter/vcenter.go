@@ -35,3 +35,11 @@ func (o *VCenter) NewFolder() *Folder {
 	}
 	return f
 }
+
+func (o *VCenter) NewCluster() *Cluster {
+	c := &Cluster{
+		con: o.con,
+		uri: o.uri + "/cluster",
+	}
+	return c
+}
