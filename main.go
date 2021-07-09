@@ -110,7 +110,7 @@ func main() {
 	case "content":
 		//test content moudle
 		content_test()
+	default:
+		flag.Usage()
 	}
-
-	flag.Usage()
 }
