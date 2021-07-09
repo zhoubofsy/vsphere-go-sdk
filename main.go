@@ -81,6 +81,11 @@ func vcenter_test() {
 	log.Debug("Folders: ", folders, err)
 	log.Debug("================================================")
 
+	c := vc.NewCluster()
+	cs, err := c.List()
+	log.Debug("Clusters: ", cs, err)
+	log.Debug("================================================")
+
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }
 
