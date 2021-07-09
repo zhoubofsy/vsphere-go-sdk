@@ -70,9 +70,16 @@ func vcenter_test() {
 	vm := vc.NewVM()
 	vms, err := vm.ListVMs()
 	log.Debug("VMs: ", vms, err)
+	log.Debug("================================================")
 
 	vmi, err := vm.GetVMInfo(vms[0].Vm)
 	log.Debug("VMI: ", vmi, err)
+	log.Debug("================================================")
+
+	f := vc.NewFolder()
+	folders, err := f.List()
+	log.Debug("Folders: ", folders, err)
+	log.Debug("================================================")
 
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }
