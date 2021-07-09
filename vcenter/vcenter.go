@@ -43,3 +43,11 @@ func (o *VCenter) NewCluster() *Cluster {
 	}
 	return c
 }
+
+func (o *VCenter) NewResourcePool() *ResourcePool {
+	r := &ResourcePool{
+		con: o.con,
+		uri: o.uri + "/resource-pool",
+	}
+	return r
+}
