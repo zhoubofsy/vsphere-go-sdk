@@ -1,21 +1,29 @@
 package content
 
-import "vsphere-go-sdk/common"
+import (
+	"vsphere-go-sdk/common"
+)
 
 type Content struct {
-	library Library
+	conn *common.Connector
+	uri string
 }
 
-func (o *Content) GetLibraryHandle() *Library {
-	return &(o.library)
+func (o *Content) NewLibrary() *Library {
+	v := &Library{
+		conn: o.conn,
+		uri: o.uri + "/library",
+	}
+	return v
 }
 
 func NewContent(c common.Client, sid string) *Content {
-	conn := common.Connector{Invoker: c, Sid: sid}
-	return &Content{
-		Library{
-			uri:  "com/vmware/content/library",
-			conn: conn,
-		},
+	vc := &Content{
+		uri: "com/vmware/content",
 	}
+	vc.conn = &common.Connector{
+		Invoker: c,
+		Sid: sid,
+	}
+	return vc
 }

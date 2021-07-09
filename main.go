@@ -27,16 +27,17 @@ func common_test() {
 func content_test()  {
 	client := common.NewClient("https://128.179.0.241/rest/")
 	log.Debug(client)
-	sid:=""
-	c:=content.NewContent(client,sid)
+	sess, err := cis.NewCIS(client).GetSessionHandle().CreateSession(cis.CodeBase64("root@vsphere.local", "Root@2021"))
+	c:=content.NewContent(client,sess)
+	l:=c.NewLibrary()
 	log.Debug(*c)
-	shandle:=c.GetLibraryHandle()
-	strs,err:=shandle.Get()
+	strs,err:=l.ListLibraries()
 	log.Debug("GetLibraryList: ", strs, err)
 
-	i:=shandle.NewItem()
-	strss,err:=i.GetByLibraryID(strs[0])
+	i:=l.NewItem()
+	strss,err:=i.GetItemByLibraryID(strs[0])
 	log.Debug("GetItemByLibraryId: ", strss, err)
+	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }
 
 func cis_test() {
@@ -81,5 +82,9 @@ func main() {
 	//cis_test()
 
 	// test vcenter module
-	vcenter_test()
+	//vcenter_test()
+
+	//test content moudle
+	content_test()
+
 }
