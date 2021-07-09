@@ -86,6 +86,10 @@ func vcenter_test() {
 	log.Debug("Clusters: ", cs, err)
 	log.Debug("================================================")
 
+	r := vc.NewResourcePool()
+	rs, err := r.List()
+	log.Debug("ResourcePools: ", rs, err)
+
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }
 
