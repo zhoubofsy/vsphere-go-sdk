@@ -89,6 +89,17 @@ func vcenter_test() {
 	r := vc.NewResourcePool()
 	rs, err := r.List()
 	log.Debug("ResourcePools: ", rs, err)
+	log.Debug("================================================")
+
+	vt := vc.NewVMTemplate().NewLibraryItems().NewItem("10574872-f28b-4f1e-b1a2-aae3a79905d4")
+	req := &vcenter.VMTemplateDeployReqeust{}
+	req.Spec.Name = "Lucy"
+	req.Spec.Description = "I am Lucy"
+	req.Spec.PoweredOn = true
+	req.Spec.Placement.ClusterID = "domain-c7"
+	req.Spec.Placement.FolderID = "group-v3"
+	vmid, err := vt.Deploy(req)
+	log.Debug("vm: ", vmid, err)
 
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }

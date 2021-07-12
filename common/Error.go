@@ -24,4 +24,5 @@ var (
 	EUNKNOW              = &Error{Code: 1000, Msg: "unknow error"}
 	ESENDREQUEST         = &Error{Code: 1001, Msg: "send request error"}
 	EUNMARSHAL           = &Error{Code: 1002, Msg: "json unmarshal error"}
+	EMARSHAL             = &Error{Code: 1003, Msg: "json marshal error"}
 )

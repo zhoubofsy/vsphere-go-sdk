@@ -51,3 +51,11 @@ func (o *VCenter) NewResourcePool() *ResourcePool {
 	}
 	return r
 }
+
+func (o *VCenter) NewVMTemplate() *VMTemplate {
+	r := &VMTemplate{
+		con: o.con,
+		uri: o.uri + "/vm-template",
+	}
+	return r
+}
