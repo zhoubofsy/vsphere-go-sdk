@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 	log "github.com/sirupsen/logrus"
+	"liyongcool.nat300.top/iaas/vsphere-go-sdk/cis"
+	"liyongcool.nat300.top/iaas/vsphere-go-sdk/common"
+	"liyongcool.nat300.top/iaas/vsphere-go-sdk/content"
+	"liyongcool.nat300.top/iaas/vsphere-go-sdk/vcenter"
 	"os"
-	"vsphere-go-sdk/cis"
-	"vsphere-go-sdk/common"
-	"vsphere-go-sdk/content"
-	"vsphere-go-sdk/vcenter"
 )
 
 func common_test() {
