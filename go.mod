@@ -1,4 +1,4 @@
-module vsphere-go-sdk
+module liyongcool.nat300.top/iaas/vsphere-go-sdk
 
 go 1.15
 
