@@ -59,14 +59,14 @@ func (c *HttpClient) SendRequest(uri string, headers map[string]string, body []b
 	for key, value := range headers {
 		req.Header.Add(key, value)
 	}
-	log.WithFields(log.Fields{"Request": req}).Trace("http.NewRequest")
+	log.WithFields(log.Fields{"Request": req}).Debug("http.NewRequest")
 	//send request
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		log.WithFields(log.Fields{"err": err}).Error("http.Do")
 		return nil, err
 	}
-	log.WithFields(log.Fields{"Response": res}).Trace("http.Do")
+	log.WithFields(log.Fields{"Response": res}).Debug("http.Do")
 	defer res.Body.Close()
 	data, err := ioutil.ReadAll(res.Body)
 	result := &ResponseResult{res.StatusCode, data}

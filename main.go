@@ -21,45 +21,45 @@ func common_test() {
 	//testBody:="gdhsdsdsghd"
 	//body,_:=json.Marshal(testBody)
 	resBody, _ := client.SendRequest(url, nil, nil, method)
-	log.Debug(resBody)
+	log.Info(resBody)
 
 }
 
 func content_test() {
 	client := common.NewClient("https://128.179.0.241/rest/")
-	log.Debug(client)
+	log.Info(client)
 	sess, err := cis.NewCIS(client).GetSessionHandle().CreateSession(cis.CodeBase64("root@vsphere.local", "Root@2021"))
 	c := content.NewContent(client, sess)
 	l := c.NewLibrary()
-	log.Debug(*c)
+	log.Info(*c)
 	strs, err := l.ListLibraries()
-	log.Debug("GetLibraryList: ", strs, err)
+	log.Info("GetLibraryList: ", strs, err)
 
 	i := l.NewItem()
 	strss, err := i.GetItemByLibraryID(strs[0])
-	log.Debug("GetItemByLibraryId: ", strss, err)
+	log.Info("GetItemByLibraryId: ", strss, err)
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }
 
 func cis_test() {
 	code := cis.CodeBase64("root@vsphere.local", "Root@2021")
-	log.Debug("base64:", code)
+	log.Info("base64:", code)
 
 	client := common.NewClient("https://128.179.0.241/rest/")
 	//client := common.NewClient("http://127.0.0.1/")
-	log.Debug(client)
+	log.Info(client)
 
 	c := cis.NewCIS(client)
-	log.Debug(*c)
+	log.Info(*c)
 
 	shandle := c.GetSessionHandle()
-	log.Debug(shandle)
+	log.Info(shandle)
 
 	sess, err := shandle.CreateSession(code)
-	log.Debug("CreateSession: ", sess, err)
+	log.Info("CreateSession: ", sess, err)
 
 	err = shandle.DeleteSession(sess)
-	log.Debug("DeleteSession: ", err)
+	log.Info("DeleteSession: ", err)
 }
 
 func vcenter_test() {
@@ -69,27 +69,27 @@ func vcenter_test() {
 	vc := vcenter.NewVCenter(client, sess)
 	vm := vc.NewVM()
 	vms, err := vm.List()
-	log.Debug("VMs: ", vms, err)
-	log.Debug("================================================")
+	log.Info("VMs: ", vms, err)
+	log.Info("================================================")
 
 	vmi, err := vm.Get(vms[0].Vm)
-	log.Debug("VMI: ", vmi, err)
-	log.Debug("================================================")
+	log.Info("VMI: ", vmi, err)
+	log.Info("================================================")
 
 	f := vc.NewFolder()
 	folders, err := f.List()
-	log.Debug("Folders: ", folders, err)
-	log.Debug("================================================")
+	log.Info("Folders: ", folders, err)
+	log.Info("================================================")
 
 	c := vc.NewCluster()
 	cs, err := c.List()
-	log.Debug("Clusters: ", cs, err)
-	log.Debug("================================================")
+	log.Info("Clusters: ", cs, err)
+	log.Info("================================================")
 
 	r := vc.NewResourcePool()
 	rs, err := r.List()
-	log.Debug("ResourcePools: ", rs, err)
-	log.Debug("================================================")
+	log.Info("ResourcePools: ", rs, err)
+	log.Info("================================================")
 
 	vt := vc.NewVMTemplate().NewLibraryItems().NewItem("10574872-f28b-4f1e-b1a2-aae3a79905d4")
 	req := &vcenter.VMTemplateDeployReqeust{}
@@ -99,7 +99,7 @@ func vcenter_test() {
 	req.Spec.Placement.ClusterID = "domain-c7"
 	req.Spec.Placement.FolderID = "group-v3"
 	vmid, err := vt.Deploy(req)
-	log.Debug("vm: ", vmid, err)
+	log.Info("vm: ", vmid, err)
 
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }
@@ -111,9 +111,9 @@ func main() {
 	flag.BoolVar(&help, "h", false, "Show Usage.")
 	flag.Parse()
 
-	log.SetOutput(os.Stdout)     //设置日志的输出为标准输出
-	log.SetLevel(log.DebugLevel) //设置日志的显示级别，这一级别以及更高级别的日志信息将会输出
-	log.SetReportCaller(true)    //设置日志的调用文件，调用函数
+	log.SetOutput(os.Stdout)    //设置日志的输出为标准输出
+	log.SetLevel(log.InfoLevel) //设置日志的显示级别，这一级别以及更高级别的日志信息将会输出
+	log.SetReportCaller(true)   //设置日志的调用文件，调用函数
 
 	if help {
 		flag.Usage()
