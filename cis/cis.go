@@ -4,7 +4,7 @@ import (
 	b64 "encoding/base64"
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
-	"vsphere-go-sdk/common"
+	"liyongcool.nat300.top/iaas/vsphere-go-sdk/common"
 )
 
 type Session struct {

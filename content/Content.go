@@ -1,18 +1,18 @@
 package content
 
 import (
-	"vsphere-go-sdk/common"
+	"liyongcool.nat300.top/iaas/vsphere-go-sdk/common"
 )
 
 type Content struct {
 	conn *common.Connector
-	uri string
+	uri  string
 }
 
 func (o *Content) NewLibrary() *Library {
 	v := &Library{
 		conn: o.conn,
-		uri: o.uri + "/library",
+		uri:  o.uri + "/library",
 	}
 	return v
 }
@@ -23,7 +23,7 @@ func NewContent(c common.Client, sid string) *Content {
 	}
 	vc.conn = &common.Connector{
 		Invoker: c,
-		Sid: sid,
+		Sid:     sid,
 	}
 	return vc
 }

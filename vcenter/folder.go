@@ -3,7 +3,7 @@ package vcenter
 import (
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
-	"vsphere-go-sdk/common"
+	"liyongcool.nat300.top/iaas/vsphere-go-sdk/common"
 )
 
 /*

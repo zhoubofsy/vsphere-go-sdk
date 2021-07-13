@@ -1,7 +1,7 @@
 package vcenter
 
 import (
-	"vsphere-go-sdk/common"
+	"liyongcool.nat300.top/iaas/vsphere-go-sdk/common"
 )
 
 type VCenter struct {
