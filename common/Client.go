@@ -3,6 +3,7 @@ package common
 import (
 	"bytes"
 	"crypto/tls"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -69,7 +70,21 @@ func (c *HttpClient) SendRequest(uri string, headers map[string]string, body []b
 	log.WithFields(log.Fields{"Response": res}).Debug("http.Do")
 	defer res.Body.Close()
 	data, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		msg := fmt.Sprintf("Fail to read response body because %s", err)
+		err = NewVsphereSDKError(res.StatusCode, &ResponseError{
+			Value: ResponseErrorValue{
+				Messages: []ResponseErrorMessages{
+					{DefaultMessage: msg},
+				},
+			},
+		})
+	}
 	result := &ResponseResult{res.StatusCode, data}
+	if result.Status != 200 {
+		err = ParseErrorFromResponse(result)
+	}
+
 	return result, err
 }
 
