@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	log "github.com/sirupsen/logrus"
+	"liyongcool.nat300.top/iaas/vsphere-go-sdk/appliance"
 	"liyongcool.nat300.top/iaas/vsphere-go-sdk/cis"
 	"liyongcool.nat300.top/iaas/vsphere-go-sdk/common"
 	"liyongcool.nat300.top/iaas/vsphere-go-sdk/content"
@@ -122,10 +123,25 @@ func vcenter_test() {
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }
 
+func appliance_test() {
+	client := common.NewClient("https://128.179.0.241/rest/")
+	log.Info(client)
+	sess, err := cis.NewCIS(client).GetSessionHandle().CreateSession(cis.CodeBase64("root@vsphere.local", "Root@2021"))
+	if err != nil {
+		log.Info("GetSession err: ", err)
+	}
+	c := appliance.NewAppliance(client, sess)
+	l := c.NewNetworking()
+	log.Info(*c)
+	strs, SDKErr := l.Get()
+	log.Info("GetNetworking: ", strs, SDKErr)
+	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
+}
+
 func main() {
 	TestModule := ""
 	help := false
-	flag.StringVar(&TestModule, "t", "", "Test Module. eg: cis , vcenter , content")
+	flag.StringVar(&TestModule, "t", "", "Test Module. eg: cis , vcenter , content, appliance")
 	flag.BoolVar(&help, "h", false, "Show Usage.")
 	flag.Parse()
 
@@ -148,6 +164,9 @@ func main() {
 	case "content":
 		//test content moudle
 		content_test()
+	case "appliance":
+		//test appliance moudle
+		appliance_test()
 	default:
 		flag.Usage()
 	}
