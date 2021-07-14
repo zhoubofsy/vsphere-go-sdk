@@ -98,14 +98,26 @@ func vcenter_test() {
 	req := &vcenter.VMTemplateDeployReqeust{}
 	req.Spec.Name = "Lucy"
 	req.Spec.Description = "I am Lucy"
-	req.Spec.PoweredOn = false
+	req.Spec.PoweredOn = true
 	req.Spec.Placement.ClusterID = "domain-c7"
 	req.Spec.Placement.FolderID = "group-v3"
 	vmid, err := vt.Deploy(req)
 	log.Info("vm: ", vmid, err)
+	log.Info("================================================")
+
+	p := vm.NewPower(vmid)
+	pi, err := p.Get()
+	log.Info("PowerInfo: ", pi, err)
+	log.Info("================================================")
+	if pi.State == "POWERED_ON" {
+		err = p.Stop()
+		log.Info("Power OFF ", err)
+		log.Info("================================================")
+	}
 
 	err = vm.Delete(vmid)
 	log.Info("delete vm: ", vmid, err)
+	log.Info("================================================")
 
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }

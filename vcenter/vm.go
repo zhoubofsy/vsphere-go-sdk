@@ -293,7 +293,14 @@ func (o *VM) Delete(vm string) error {
 func (o *VM) NewHardware(vm string) *Hardware {
 	return &Hardware{
 		con: o.con,
-		uri: o.uri + vm + "/hardware",
+		uri: o.uri + "/" + vm + "/hardware",
+	}
+}
+
+func (o *VM) NewPower(vm string) *Power {
+	return &Power{
+		con: o.con,
+		uri: o.uri + "/" + vm + "/power",
 	}
 }
 
@@ -318,4 +325,87 @@ func (o *Hardware) NewDisk() *Disk {
 type Disk struct {
 	con *common.Connector
 	uri string
+}
+
+/*
+* Power Operations
+ */
+type Power struct {
+	con *common.Connector
+	uri string
+}
+
+type PowerInfo struct {
+	CleanPowerOff bool   `json:"clean_power_off,omitempty"`
+	State         string `json:"state,omitempty"`
+}
+
+type ValueOfPowerInfo struct {
+	Value PowerInfo `json:"value"`
+}
+
+func (o *Power) Get() (*PowerInfo, error) {
+	header := make(map[string]string)
+	header["vmware-api-session-id"] = o.con.Sid
+	resp, err := o.con.Invoker.SendRequest(o.uri, header, nil, "GET")
+	if err != nil {
+		log.WithFields(log.Fields{"Error": err, "URI": o.uri}).Error("GetPowerInfo")
+		return nil, err
+	}
+
+	vpi := ValueOfPowerInfo{}
+	err = json.Unmarshal(resp.Data, &vpi)
+	if err != nil {
+		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("GetPowerInfo")
+		return nil, err
+	}
+	return &(vpi.Value), err
+}
+
+type PowerOpType int
+
+const (
+	POWER_OP_RESET   PowerOpType = 1
+	POWER_OP_START   PowerOpType = 2
+	POWER_OP_STOP    PowerOpType = 3
+	POWER_OP_SUSPEND PowerOpType = 4
+)
+
+func (o *Power) post(op PowerOpType) error {
+	header := make(map[string]string)
+	header["vmware-api-session-id"] = o.con.Sid
+
+	op_uri := "/"
+	switch op {
+	case POWER_OP_RESET:
+		op_uri += "reset"
+	case POWER_OP_STOP:
+		op_uri += "stop"
+	case POWER_OP_START:
+		op_uri += "start"
+	case POWER_OP_SUSPEND:
+		op_uri += "suspend"
+	}
+
+	_, err := o.con.Invoker.SendRequest(o.uri+op_uri, header, nil, "POST")
+	if err != nil {
+		log.WithFields(log.Fields{"Error": err}).Error("GetPowerInfo")
+	}
+	return err
+}
+
+func (o *Power) Reset() error {
+	return o.post(POWER_OP_RESET)
+}
+
+func (o *Power) Stop() error {
+	return o.post(POWER_OP_STOP)
+}
+
+func (o *Power) Start() error {
+	return o.post(POWER_OP_START)
+}
+
+func (o *Power) Suspend() error {
+	return o.post(POWER_OP_SUSPEND)
 }
