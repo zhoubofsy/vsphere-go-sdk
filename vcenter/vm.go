@@ -293,6 +293,26 @@ func (o *VM) Get(vm string) (*VMInfo, *common.Error) {
 	return &(vmi.Value), common.EOK
 }
 
+func (o *VM) Delete(vm string) *common.Error {
+	header := make(map[string]string)
+	header["vmware-api-session-id"] = o.con.Sid
+	uri := o.uri + "/" + vm
+	resp, err := o.con.Invoker.SendRequest(uri, header, nil, "DELETE")
+	if err != nil {
+		log.WithFields(log.Fields{"Error": err}).Error("VMDelete")
+		return common.ESENDREQUEST
+	}
+	if resp.Status != 200 {
+		log.WithFields(log.Fields{"Response": resp}).Error("VMDelete")
+		switch resp.Status {
+		case 401:
+			return common.EUNAUTHORED
+		}
+		return common.EUNKNOW
+	}
+	return common.EOK
+}
+
 func (o *VM) NewHardware(vm string) *Hardware {
 	return &Hardware{
 		con: o.con,
