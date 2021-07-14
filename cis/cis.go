@@ -42,7 +42,7 @@ type ValueOfSessionInfo struct {
 func (o *Session) Update(sessid string) (*SessionInfo, error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = sessid
-	resp, err := o.client.SendRequest(o.uri, header, nil, "POST")
+	resp, err := o.client.SendRequest(o.uri+"?~action=get", header, nil, "POST")
 	if err != nil {
 		log.WithFields(log.Fields{"Error": err}).Error("UpdateSession")
 		return nil, err
