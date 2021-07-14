@@ -11,31 +11,22 @@ type Library struct {
 	uri  string
 }
 
-func (l *Library) ListLibraries() ([]string, *common.Error) {
+func (l *Library) ListLibraries() ([]string, error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = l.conn.Sid
 	resp, err := l.conn.Invoker.SendRequest(l.uri, header, nil, "GET")
 	if err != nil {
 		log.Error("SendRequestError: ", err)
-		return nil, common.ESENDREQUEST
-	}
-	if resp.Status != 200 {
-		switch resp.Status {
-		case 401:
-			return nil, common.EUNAUTHORED
-		case 503:
-			return nil, common.ESERVICE_UNAVAILABLE
-		}
-		return nil, common.EUNKNOW
+		return nil, err
 	}
 	log.WithFields(log.Fields{"ResponseData": string(resp.Data)}).Debug("GetLibrary")
 	response := make(map[string][]string)
 	err = json.Unmarshal(resp.Data, &response)
 	if err != nil {
-		return nil, common.EUNMARSHAL
+		return nil, err
 	}
 	log.WithFields(log.Fields{"response: ": response}).Debug("GetLibraryResponse")
-	return response["value"], common.EOK
+	return response["value"], err
 }
 
 func (l *Library) NewItem() *Item {
@@ -50,29 +41,20 @@ type Item struct {
 	uri  string
 }
 
-func (i *Item) GetItemByLibraryID(libraryId string) ([]string, *common.Error) {
+func (i *Item) GetItemByLibraryID(libraryId string) ([]string, error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = i.conn.Sid
 	resp, err := i.conn.Invoker.SendRequest(i.uri+"?library_id="+libraryId, header, nil, "GET")
 	if err != nil {
 		log.Error("SendRequestError: ", err)
-		return nil, common.ESENDREQUEST
-	}
-	if resp.Status != 200 {
-		switch resp.Status {
-		case 401:
-			return nil, common.EUNAUTHORED
-		case 503:
-			return nil, common.ESERVICE_UNAVAILABLE
-		}
-		return nil, common.EUNKNOW
+		return nil, err
 	}
 	log.WithFields(log.Fields{"ResponseData": string(resp.Data)}).Debug("GetByLibraryID")
 	response := make(map[string][]string)
 	err = json.Unmarshal(resp.Data, &response)
 	if err != nil {
-		return nil, common.EUNMARSHAL
+		return nil, err
 	}
 	log.WithFields(log.Fields{"response: ": response}).Debug("GetByLibraryIDResponse")
-	return response["value"], common.EOK
+	return response["value"], err
 }

@@ -23,27 +23,20 @@ type ValueOfResourcePoolInfo struct {
 	Value []ResourcePoolInfo `json:"value,omitempty"`
 }
 
-func (o *ResourcePool) List() ([]ResourcePoolInfo, *common.Error) {
+func (o *ResourcePool) List() ([]ResourcePoolInfo, error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = o.con.Sid
 	resp, err := o.con.Invoker.SendRequest(o.uri, header, nil, "GET")
 	if err != nil {
 		log.WithFields(log.Fields{"Error": err}).Error("ListResourcePools")
-		return nil, common.ESENDREQUEST
+		return nil, err
 	}
-	if resp.Status != 200 {
-		log.WithFields(log.Fields{"Response": resp}).Error("ListResourcePools")
-		switch resp.Status {
-		case 401:
-			return nil, common.EUNAUTHORED
-		}
-		return nil, common.EUNKNOW
-	}
+
 	rps := ValueOfResourcePoolInfo{}
 	err = json.Unmarshal(resp.Data, &rps)
 	if err != nil {
 		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("ListResourcePools")
-		return nil, common.EUNMARSHAL
+		return nil, err
 	}
-	return rps.Value, common.EOK
+	return rps.Value, err
 }

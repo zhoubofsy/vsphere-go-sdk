@@ -25,27 +25,20 @@ type ValueOfClusterInfo struct {
 	Value []ClusterInfo `json:"value,omitempty"`
 }
 
-func (o *Cluster) List() ([]ClusterInfo, *common.Error) {
+func (o *Cluster) List() ([]ClusterInfo, error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = o.con.Sid
 	resp, err := o.con.Invoker.SendRequest(o.uri, header, nil, "GET")
 	if err != nil {
 		log.WithFields(log.Fields{"Error": err}).Error("ListClusters")
-		return nil, common.ESENDREQUEST
+		return nil, err
 	}
-	if resp.Status != 200 {
-		log.WithFields(log.Fields{"Response": resp}).Error("ListClusters")
-		switch resp.Status {
-		case 401:
-			return nil, common.EUNAUTHORED
-		}
-		return nil, common.EUNKNOW
-	}
+
 	clusters := ValueOfClusterInfo{}
 	err = json.Unmarshal(resp.Data, &clusters)
 	if err != nil {
 		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("ListClusters")
-		return nil, common.EUNMARSHAL
+		return nil, err
 	}
-	return clusters.Value, common.EOK
+	return clusters.Value, err
 }

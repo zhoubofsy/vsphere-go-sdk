@@ -26,29 +26,22 @@ type ValueOfListVMsResult struct {
 	Value []ListVMResult `json:"value"`
 }
 
-func (o *VM) List() ([]ListVMResult, *common.Error) {
+func (o *VM) List() ([]ListVMResult, error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = o.con.Sid
 	resp, err := o.con.Invoker.SendRequest(o.uri, header, nil, "GET")
 	if err != nil {
 		log.WithFields(log.Fields{"Error": err}).Error("ListVMs")
-		return nil, common.ESENDREQUEST
+		return nil, err
 	}
-	if resp.Status != 200 {
-		log.WithFields(log.Fields{"Response": resp}).Error("ListVMs")
-		switch resp.Status {
-		case 401:
-			return nil, common.EUNAUTHORED
-		}
-		return nil, common.EUNKNOW
-	}
+
 	vms := ValueOfListVMsResult{}
 	err = json.Unmarshal(resp.Data, &vms)
 	if err != nil {
 		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("ListVMs")
-		return nil, common.EUNMARSHAL
+		return nil, err
 	}
-	return vms.Value, common.EOK
+	return vms.Value, err
 }
 
 type CDROMInfo struct {
@@ -267,50 +260,34 @@ type ValueOfVMInfo struct {
 	Value VMInfo `json:"value"`
 }
 
-func (o *VM) Get(vm string) (*VMInfo, *common.Error) {
+func (o *VM) Get(vm string) (*VMInfo, error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = o.con.Sid
 	uri := o.uri + "/" + vm
 	resp, err := o.con.Invoker.SendRequest(uri, header, nil, "GET")
 	if err != nil {
 		log.WithFields(log.Fields{"Error": err}).Error("GetVMInfo")
-		return nil, common.ESENDREQUEST
+		return nil, err
 	}
-	if resp.Status != 200 {
-		log.WithFields(log.Fields{"Response": resp}).Error("GetVMInfo")
-		switch resp.Status {
-		case 401:
-			return nil, common.EUNAUTHORED
-		}
-		return nil, common.EUNKNOW
-	}
+
 	vmi := ValueOfVMInfo{}
 	err = json.Unmarshal(resp.Data, &vmi)
 	if err != nil {
 		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("GetVMInfo")
-		return nil, common.EUNMARSHAL
+		return nil, err
 	}
-	return &(vmi.Value), common.EOK
+	return &(vmi.Value), err
 }
 
-func (o *VM) Delete(vm string) *common.Error {
+func (o *VM) Delete(vm string) error {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = o.con.Sid
 	uri := o.uri + "/" + vm
-	resp, err := o.con.Invoker.SendRequest(uri, header, nil, "DELETE")
+	_, err := o.con.Invoker.SendRequest(uri, header, nil, "DELETE")
 	if err != nil {
 		log.WithFields(log.Fields{"Error": err}).Error("VMDelete")
-		return common.ESENDREQUEST
 	}
-	if resp.Status != 200 {
-		log.WithFields(log.Fields{"Response": resp}).Error("VMDelete")
-		switch resp.Status {
-		case 401:
-			return common.EUNAUTHORED
-		}
-		return common.EUNKNOW
-	}
-	return common.EOK
+	return err
 }
 
 func (o *VM) NewHardware(vm string) *Hardware {
