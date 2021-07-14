@@ -12,31 +12,21 @@ type Session struct {
 	uri    string
 }
 
-func (o *Session) CreateSession(basic string) (string, *common.Error) {
+func (o *Session) CreateSession(basic string) (string, error) {
 	header := make(map[string]string)
 	header["Authorization"] = "Basic " + basic
 	resp, err := o.client.SendRequest(o.uri, header, nil, "POST")
 	if err != nil {
 		log.WithFields(log.Fields{"Error": err}).Error("CreateSession")
-		return "", common.ESENDREQUEST
-	}
-	if resp.Status != 200 {
-		log.WithFields(log.Fields{"Response": resp}).Error("CreateSession")
-		switch resp.Status {
-		case 401:
-			return "", common.EUNAUTHORED
-		case 503:
-			return "", common.ESERVICE_UNAVAILABLE
-		}
-		return "", common.EUNKNOW
+		return "", err
 	}
 	response := make(map[string]string)
 	err = json.Unmarshal(resp.Data, &response)
 	if err != nil {
 		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("CreateSession")
-		return "", common.EUNMARSHAL
+		return "", err
 	}
-	return response["value"], common.EOK
+	return response["value"], err
 }
 
 type SessionInfo struct {
@@ -49,50 +39,32 @@ type ValueOfSessionInfo struct {
 	Value SessionInfo `json:"value"`
 }
 
-func (o *Session) Update(sessid string) (*SessionInfo, *common.Error) {
+func (o *Session) Update(sessid string) (*SessionInfo, error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = sessid
 	resp, err := o.client.SendRequest(o.uri, header, nil, "POST")
 	if err != nil {
 		log.WithFields(log.Fields{"Error": err}).Error("UpdateSession")
-		return nil, common.ESENDREQUEST
+		return nil, err
 	}
-	if resp.Status != 200 {
-		log.WithFields(log.Fields{"Response": resp}).Error("UpdateSession")
-		switch resp.Status {
-		case 401:
-			return nil, common.EUNAUTHORED
-		}
-		return nil, common.EUNKNOW
-	}
+
 	sessInfo := &ValueOfSessionInfo{}
 	err = json.Unmarshal(resp.Data, sessInfo)
 	if err != nil {
 		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("UpdateSession")
-		return nil, common.EUNMARSHAL
+		return nil, err
 	}
-	return &(sessInfo.Value), common.EOK
+	return &(sessInfo.Value), err
 }
 
-func (o *Session) DeleteSession(sessid string) *common.Error {
+func (o *Session) DeleteSession(sessid string) error {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = sessid
-	resp, err := o.client.SendRequest(o.uri, header, nil, "DELETE")
+	_, err := o.client.SendRequest(o.uri, header, nil, "DELETE")
 	if err != nil {
 		log.WithFields(log.Fields{"Error": err}).Error("DeleteSession")
-		return common.ESENDREQUEST
 	}
-	if resp.Status != 200 {
-		log.WithFields(log.Fields{"Response": resp}).Error("DeleteSession")
-		switch resp.Status {
-		case 401:
-			return common.EUNAUTHORED
-		case 503:
-			return common.ESERVICE_UNAVAILABLE
-		}
-		return common.EUNKNOW
-	}
-	return common.EOK
+	return err
 }
 
 type CIS struct {

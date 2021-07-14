@@ -56,32 +56,25 @@ type VMTemplateDeployResponse struct {
 	Value string `json:"value"`
 }
 
-func (o *Item) Deploy(req *VMTemplateDeployReqeust) (string, *common.Error) {
+func (o *Item) Deploy(req *VMTemplateDeployReqeust) (string, error) {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = o.con.Sid
 	header["Content-Type"] = "application/json"
 	body, err := json.Marshal(*req)
 	if err != nil {
-		return "", common.EMARSHAL
+		return "", err
 	}
 	resp, err := o.con.Invoker.SendRequest(o.uri, header, body, "POST")
 	if err != nil {
 		log.WithFields(log.Fields{"Error": err}).Error("ItemDeploy")
-		return "", common.ESENDREQUEST
+		return "", err
 	}
-	if resp.Status != 200 {
-		log.WithFields(log.Fields{"Response Code": resp.Status, "Response Data": string(resp.Data)}).Error("ItemDeploy")
-		switch resp.Status {
-		case 401:
-			return "", common.EUNAUTHORED
-		}
-		return "", common.EUNKNOW
-	}
+
 	rps := VMTemplateDeployResponse{}
 	err = json.Unmarshal(resp.Data, &rps)
 	if err != nil {
 		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("ItemDeploy")
-		return "", common.EUNMARSHAL
+		return "", err
 	}
-	return rps.Value, common.EOK
+	return rps.Value, err
 }
