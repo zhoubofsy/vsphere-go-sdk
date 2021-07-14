@@ -39,6 +39,41 @@ func (o *Session) CreateSession(basic string) (string, *common.Error) {
 	return response["value"], common.EOK
 }
 
+type SessionInfo struct {
+	CreateTime       string `json:"created_time"`
+	LastAccessedTime string `json:"last_accessed_time"`
+	User             string `json:"user"`
+}
+
+type ValueOfSessionInfo struct {
+	Value SessionInfo `json:"value"`
+}
+
+func (o *Session) Update(sessid string) (*SessionInfo, *common.Error) {
+	header := make(map[string]string)
+	header["vmware-api-session-id"] = sessid
+	resp, err := o.client.SendRequest(o.uri, header, nil, "POST")
+	if err != nil {
+		log.WithFields(log.Fields{"Error": err}).Error("UpdateSession")
+		return nil, common.ESENDREQUEST
+	}
+	if resp.Status != 200 {
+		log.WithFields(log.Fields{"Response": resp}).Error("UpdateSession")
+		switch resp.Status {
+		case 401:
+			return nil, common.EUNAUTHORED
+		}
+		return nil, common.EUNKNOW
+	}
+	sessInfo := &ValueOfSessionInfo{}
+	err = json.Unmarshal(resp.Data, sessInfo)
+	if err != nil {
+		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("UpdateSession")
+		return nil, common.EUNMARSHAL
+	}
+	return &(sessInfo.Value), common.EOK
+}
+
 func (o *Session) DeleteSession(sessid string) *common.Error {
 	header := make(map[string]string)
 	header["vmware-api-session-id"] = sessid
