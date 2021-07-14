@@ -239,7 +239,7 @@ type HardwareInfo struct {
 
 type VMInfo struct {
 	Cdroms        []CDROMInfo        `json:"cdroms,omitempty"`
-	Floppies      FloppyInfo         `json:"floppies,omitempty"`
+	Floppies      []FloppyInfo       `json:"floppies,omitempty"`
 	Memory        MemoryInfo         `json:"memory"`
 	Disks         []DiskInfo         `json:"disks,omitempty"`
 	SataAdapters  []SataAdapterInfo  `json:"sata_adapters,omitempty"`
