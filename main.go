@@ -58,6 +58,9 @@ func cis_test() {
 	sess, err := shandle.CreateSession(code)
 	log.Info("CreateSession: ", sess, err)
 
+	info, err := shandle.Update(sess)
+	log.Info("UpdateSession: ", info, err)
+
 	err = shandle.DeleteSession(sess)
 	log.Info("DeleteSession: ", err)
 }
@@ -95,11 +98,14 @@ func vcenter_test() {
 	req := &vcenter.VMTemplateDeployReqeust{}
 	req.Spec.Name = "Lucy"
 	req.Spec.Description = "I am Lucy"
-	req.Spec.PoweredOn = true
+	req.Spec.PoweredOn = false
 	req.Spec.Placement.ClusterID = "domain-c7"
 	req.Spec.Placement.FolderID = "group-v3"
 	vmid, err := vt.Deploy(req)
 	log.Info("vm: ", vmid, err)
+
+	err = vm.Delete(vmid)
+	log.Info("delete vm: ", vmid, err)
 
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }
