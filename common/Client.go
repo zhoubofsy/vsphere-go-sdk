@@ -53,21 +53,21 @@ func (c *HttpClient) SendRequest(uri string, headers map[string]string, body []b
 	url := c.host + uri
 	req, err := http.NewRequest(method, url, ioReader)
 	if err != nil {
-		log.WithFields(log.Fields{"err": err}).Error("http.NewRequest")
+		log.Error("SendRequest Error: ", err)
 		return nil, err
 	}
 	//add header
 	for key, value := range headers {
 		req.Header.Add(key, value)
 	}
-	log.WithFields(log.Fields{"Request": req}).Debug("http.NewRequest")
+	log.Debug("SendRequest Request: ", req)
 	//send request
 	res, err := c.httpClient.Do(req)
 	if err != nil {
-		log.WithFields(log.Fields{"err": err}).Error("http.Do")
+		log.Error("SendRequest Error: ", err)
 		return nil, err
 	}
-	log.WithFields(log.Fields{"Response": res}).Debug("http.Do")
+	log.Debug("SendRequest Response:", res)
 	defer res.Body.Close()
 	data, err := ioutil.ReadAll(res.Body)
 	if err != nil {

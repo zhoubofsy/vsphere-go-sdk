@@ -31,14 +31,14 @@ func (o *VM) List() ([]ListVMResult, error) {
 	header["vmware-api-session-id"] = o.con.Sid
 	resp, err := o.con.Invoker.SendRequest(o.uri, header, nil, "GET")
 	if err != nil {
-		log.WithFields(log.Fields{"Error": err}).Error("ListVMs")
+		log.Error("ListVMs Error", err)
 		return nil, err
 	}
 
 	vms := ValueOfListVMsResult{}
 	err = json.Unmarshal(resp.Data, &vms)
 	if err != nil {
-		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("ListVMs")
+		log.Error("ListVMs Response Data", string(resp.Data))
 		return nil, err
 	}
 	return vms.Value, err
@@ -266,14 +266,14 @@ func (o *VM) Get(vm string) (*VMInfo, error) {
 	uri := o.uri + "/" + vm
 	resp, err := o.con.Invoker.SendRequest(uri, header, nil, "GET")
 	if err != nil {
-		log.WithFields(log.Fields{"Error": err}).Error("GetVMInfo")
+		log.Error("GetVMInfo Error: ", err)
 		return nil, err
 	}
 
 	vmi := ValueOfVMInfo{}
 	err = json.Unmarshal(resp.Data, &vmi)
 	if err != nil {
-		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("GetVMInfo")
+		log.Error("GetVMInfo Response Data", string(resp.Data))
 		return nil, err
 	}
 	return &(vmi.Value), err

@@ -28,14 +28,14 @@ func (o *DC) List() ([]DCInfo, error) {
 	header["vmware-api-session-id"] = o.con.Sid
 	resp, err := o.con.Invoker.SendRequest(o.uri, header, nil, "GET")
 	if err != nil {
-		log.WithFields(log.Fields{"Error": err}).Error("ListDCs")
+		log.Error("ListDCs Error: ", err)
 		return nil, err
 	}
 
 	dcs := ValueOfDCInfo{}
 	err = json.Unmarshal(resp.Data, &dcs)
 	if err != nil {
-		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("ListDCs")
+		log.Error("ListDCs Response Data", string(resp.Data))
 		return nil, err
 	}
 	return dcs.Value, err
