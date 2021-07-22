@@ -44,6 +44,14 @@ func (o *VCenter) NewCluster() *Cluster {
 	return c
 }
 
+func (o *VCenter) NewDC() *DC {
+	c := &DC{
+		con: o.con,
+		uri: o.uri + "/datacenter",
+	}
+	return c
+}
+
 func (o *VCenter) NewResourcePool() *ResourcePool {
 	r := &ResourcePool{
 		con: o.con,
