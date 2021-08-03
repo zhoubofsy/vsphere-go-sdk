@@ -39,6 +39,8 @@ func content_test() {
 	i := l.NewItem()
 	strss, err := i.GetItemByLibraryID(strs[0])
 	log.Info("GetItemByLibraryId: ", strss, err)
+	info, err := i.GetItemInfoByItemID(strss[0])
+	log.Info("GetItemInfoByItemID: ", info, err)
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }
 
