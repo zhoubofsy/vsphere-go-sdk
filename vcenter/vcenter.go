@@ -67,3 +67,19 @@ func (o *VCenter) NewVMTemplate() *VMTemplate {
 	}
 	return r
 }
+
+func (o *VCenter) NewDataStore() *DataStore {
+	r := &DataStore{
+		con: o.con,
+		uri: o.uri + "/datastore",
+	}
+	return r
+}
+
+func (o *VCenter) NewHost() *Host {
+	r := &Host{
+		con: o.con,
+		uri: o.uri + "/host",
+	}
+	return r
+}

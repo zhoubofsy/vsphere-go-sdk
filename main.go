@@ -73,6 +73,16 @@ func vcenter_test() {
 	sess, err := cis.NewCIS(client).GetSessionHandle().CreateSession(cis.CodeBase64("root@vsphere.local", "Root@2021"))
 
 	vc := vcenter.NewVCenter(client, sess)
+	ds := vc.NewDataStore()
+	dss, err := ds.List()
+	log.Info("DataStores: ", dss, err)
+	log.Info("================================================")
+
+	host := vc.NewHost()
+	hosts, err := host.List()
+	log.Info("Hosts: ", hosts, err)
+	log.Info("================================================")
+
 	vm := vc.NewVM()
 	vms, err := vm.List()
 	log.Info("VMs: ", vms, err)
