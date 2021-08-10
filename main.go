@@ -114,6 +114,11 @@ func vcenter_test() {
 	req.Spec.PoweredOn = true
 	req.Spec.Placement.ClusterID = "domain-c7"
 	req.Spec.Placement.FolderID = "group-v3"
+	req.Spec.Placement.Host = "host-12"
+	req.Spec.VMHomeStorage = &vcenter.VMTemplateDeployHomeStorage{
+		DataStore: "datastore-60",
+	}
+	//req.Spec.VMHomeStorage = nil
 	vmid, err := vt.Deploy(req)
 	log.Info("vm: ", vmid, err)
 	log.Info("================================================")

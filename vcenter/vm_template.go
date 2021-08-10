@@ -38,6 +38,10 @@ type Item struct {
 	uri string
 }
 
+type VMTemplateDeployHomeStorage struct {
+	DataStore string `json:"datastore,omitempty"`
+}
+
 type VMTemplateDeployReqeust struct {
 	Spec struct {
 		Name        string `json:"name"`
@@ -49,6 +53,7 @@ type VMTemplateDeployReqeust struct {
 			Host           string `json:"host,omitempty"`
 			ResourcePoolID string `json:"resource_pool,omitempty"`
 		} `json:"placement"`
+		VMHomeStorage *VMTemplateDeployHomeStorage `json:"vm_home_storage,omitempty"`
 	} `json:"spec"`
 }
 
