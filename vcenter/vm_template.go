@@ -42,6 +42,17 @@ type VMTemplateDeployHomeStorage struct {
 	DataStore string `json:"datastore,omitempty"`
 }
 
+type VMTemplateHDCustomNIC struct {
+	Key   string `json:"key"`
+	Value struct {
+		Network string `json:"network"`
+	} `json:"value"`
+}
+
+type VMTemplateHDCustom struct {
+	NICs []VMTemplateHDCustomNIC `json:"nics,omitempty"`
+}
+
 type VMTemplateDeployReqeust struct {
 	Spec struct {
 		Name        string `json:"name"`
@@ -53,7 +64,8 @@ type VMTemplateDeployReqeust struct {
 			Host           string `json:"host,omitempty"`
 			ResourcePoolID string `json:"resource_pool,omitempty"`
 		} `json:"placement"`
-		VMHomeStorage *VMTemplateDeployHomeStorage `json:"vm_home_storage,omitempty"`
+		VMHomeStorage  *VMTemplateDeployHomeStorage `json:"vm_home_storage,omitempty"`
+		HardwareCustom *VMTemplateHDCustom          `json:"hardware_customization,omitempty"`
 	} `json:"spec"`
 }
 
