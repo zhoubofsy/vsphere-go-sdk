@@ -83,14 +83,14 @@ func (o *Item) Deploy(req *VMTemplateDeployReqeust) (string, error) {
 	}
 	resp, err := o.con.Invoker.SendRequest(o.uri, header, body, "POST")
 	if err != nil {
-		log.WithFields(log.Fields{"Error": err}).Error("ItemDeploy")
+		log.Error("Deploy SendRequest Error, ", err)
 		return "", err
 	}
 
 	rps := VMTemplateDeployResponse{}
 	err = json.Unmarshal(resp.Data, &rps)
 	if err != nil {
-		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("ItemDeploy")
+		log.Error("Deploy Unmarshal Error, ", err)
 		return "", err
 	}
 	return rps.Value, err

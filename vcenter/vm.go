@@ -285,7 +285,7 @@ func (o *VM) Delete(vm string) error {
 	uri := o.uri + "/" + vm
 	_, err := o.con.Invoker.SendRequest(uri, header, nil, "DELETE")
 	if err != nil {
-		log.WithFields(log.Fields{"Error": err}).Error("VMDelete")
+		log.Error("Delete SendRequest Error, ", err)
 	}
 	return err
 }
@@ -349,14 +349,14 @@ func (o *Power) Get() (*PowerInfo, error) {
 	header["vmware-api-session-id"] = o.con.Sid
 	resp, err := o.con.Invoker.SendRequest(o.uri, header, nil, "GET")
 	if err != nil {
-		log.WithFields(log.Fields{"Error": err, "URI": o.uri}).Error("GetPowerInfo")
+		log.Error("Power Get SendRequest Error, ", err)
 		return nil, err
 	}
 
 	vpi := ValueOfPowerInfo{}
 	err = json.Unmarshal(resp.Data, &vpi)
 	if err != nil {
-		log.WithFields(log.Fields{"Response Data": string(resp.Data)}).Error("GetPowerInfo")
+		log.Error("Power Get Unmarshal Error, ", err)
 		return nil, err
 	}
 	return &(vpi.Value), err
@@ -389,7 +389,7 @@ func (o *Power) post(op PowerOpType) error {
 
 	_, err := o.con.Invoker.SendRequest(o.uri+op_uri, header, nil, "POST")
 	if err != nil {
-		log.WithFields(log.Fields{"Error": err}).Error("GetPowerInfo")
+		log.Error("Power post SendRequest error, ", err)
 	}
 	return err
 }

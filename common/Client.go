@@ -60,14 +60,14 @@ func (c *HttpClient) SendRequest(uri string, headers map[string]string, body []b
 	for key, value := range headers {
 		req.Header.Add(key, value)
 	}
-	log.Debug("SendRequest Request: ", req)
+	//log.Debug("SendRequest Request: ", req)
 	//send request
 	res, err := c.httpClient.Do(req)
 	if err != nil {
 		log.Error("SendRequest Error: ", err)
 		return nil, err
 	}
-	log.Debug("SendRequest Response:", res)
+	//log.Debug("SendRequest Response:", res)
 	defer res.Body.Close()
 	data, err := ioutil.ReadAll(res.Body)
 	if err != nil {
