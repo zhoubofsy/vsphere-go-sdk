@@ -52,6 +52,14 @@ func (o *VCenter) NewDC() *DC {
 	return c
 }
 
+func (o *VCenter) NewNetwork() *Network {
+	c := &Network{
+		con: o.con,
+		uri: o.uri + "/network",
+	}
+	return c
+}
+
 func (o *VCenter) NewResourcePool() *ResourcePool {
 	r := &ResourcePool{
 		con: o.con,
