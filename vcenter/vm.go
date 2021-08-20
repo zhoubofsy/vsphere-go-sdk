@@ -186,31 +186,33 @@ type FloppyInfo struct {
 	} `json:"value,omitempty"`
 }
 
+type NicInfoDetail struct {
+	StartConnected bool `json:"start_connected,omitempty"`
+	PCISlotNumber  int  `json:"pci_slot_number,omitempty"`
+	Backing        struct {
+		DistributedSwitchUUID string `json:"distributed_switch_uuid,omitempty"`
+		DistributedPort       string `json:"distributed_port,omitempty"`
+		OpaqueNetworkID       string `json:"opaque_network_id,omitempty"`
+		OpaqueNetworkType     string `json:"opaque_network_type,omitempty"`
+		HostDevice            string `json:"host_device,omitempty"`
+		ConnectionCookie      int    `json:"connection_cookie,omitempty"`
+		NetworkName           string `json:"network_name,omitempty"`
+		Type                  string `json:"type,omitempty"`
+		Network               string `json:"network,omitempty"`
+	} `json:"backing,omitempty"`
+	MacAddress              string `json:"mac_address,omitempty"`
+	MacType                 string `json:"mac_type,omitempty"`
+	AllowGuestControl       bool   `json:"allow_guest_control,omitempty"`
+	WakeOnLanEnabled        bool   `json:"wake_on_lan_enabled,omitempty"`
+	Label                   string `json:"label,omitempty"`
+	State                   string `json:"state,omitempty"`
+	Type                    string `json:"type,omitempty"`
+	UPTCompatibilityEnabled bool   `json:"upt_compatibility_enabled,omitempty"`
+}
+
 type NicInfo struct {
-	Key   string `json:"key,omitempty"`
-	Value struct {
-		StartConnected bool `json:"start_connected,omitempty"`
-		PCISlotNumber  int  `json:"pci_slot_number,omitempty"`
-		Backing        struct {
-			DistributedSwitchUUID string `json:"distributed_switch_uuid,omitempty"`
-			DistributedPort       string `json:"distributed_port,omitempty"`
-			OpaqueNetworkID       string `json:"opaque_network_id,omitempty"`
-			OpaqueNetworkType     string `json:"opaque_network_type,omitempty"`
-			HostDevice            string `json:"host_device,omitempty"`
-			ConnectionCookie      int    `json:"connection_cookie,omitempty"`
-			NetworkName           string `json:"network_name,omitempty"`
-			Type                  string `json:"type,omitempty"`
-			Network               string `json:"network,omitempty"`
-		} `json:"backing,omitempty"`
-		MacAddress              string `json:"mac_address,omitempty"`
-		MacType                 string `json:"mac_type,omitempty"`
-		AllowGuestControl       bool   `json:"allow_guest_control,omitempty"`
-		WakeOnLanEnabled        bool   `json:"wake_on_lan_enabled,omitempty"`
-		Label                   string `json:"label,omitempty"`
-		State                   string `json:"state,omitempty"`
-		Type                    string `json:"type,omitempty"`
-		UPTCompatibilityEnabled bool   `json:"upt_compatibility_enabled,omitempty"`
-	} `json:"value,omitempty"`
+	Key   string        `json:"key,omitempty"`
+	Value NicInfoDetail `json:"value,omitempty"`
 }
 
 type BootInfo struct {
@@ -317,6 +319,70 @@ func (o *Hardware) NewDisk() *Disk {
 		con: o.con,
 		uri: o.uri + "/disk",
 	}
+}
+
+func (o *Hardware) NewEthernet() *Ethernet {
+	return &Ethernet{
+		con: o.con,
+		uri: o.uri + "/ethernet",
+	}
+}
+
+/*
+* Ethernet Operations
+ */
+type Ethernet struct {
+	con *common.Connector
+	uri string
+}
+
+type ListEthernetResult struct {
+	Nic string `json:"nic"`
+}
+
+type ValueOfListEthernetResult struct {
+	Value []ListEthernetResult `json:"value"`
+}
+
+func (o *Ethernet) List() ([]ListEthernetResult, error) {
+	header := make(map[string]string)
+	header["vmware-api-session-id"] = o.con.Sid
+	resp, err := o.con.Invoker.SendRequest(o.uri, header, nil, "GET")
+	if err != nil {
+		log.Error("Ethernet List SendRequest Error, ", err)
+		return nil, err
+	}
+
+	vel := ValueOfListEthernetResult{}
+	err = json.Unmarshal(resp.Data, &vel)
+	if err != nil {
+		log.Error("Ethernet List Unmarshal Error, ", err)
+		return nil, err
+	}
+	return vel.Value, err
+}
+
+type ValueOfEthernetInfo struct {
+	Value NicInfoDetail `json:"value"`
+}
+
+func (o *Ethernet) Get(nic string) (*NicInfoDetail, error) {
+	header := make(map[string]string)
+	header["vmware-api-session-id"] = o.con.Sid
+	uri := o.uri + "/" + nic
+	resp, err := o.con.Invoker.SendRequest(uri, header, nil, "GET")
+	if err != nil {
+		log.Error("Ethernet Get SendRequest Error, ", err, " URI: ", uri)
+		return nil, err
+	}
+
+	vei := ValueOfEthernetInfo{}
+	err = json.Unmarshal(resp.Data, &vei)
+	if err != nil {
+		log.Error("Ethernet Get Unmarshal Error, ", err)
+		return nil, err
+	}
+	return &(vei.Value), err
 }
 
 /*

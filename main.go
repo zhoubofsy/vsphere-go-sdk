@@ -71,92 +71,93 @@ func cis_test() {
 func vcenter_test() {
 	client := common.NewClient("https://128.179.0.241/rest/")
 	sess, err := cis.NewCIS(client).GetSessionHandle().CreateSession(cis.CodeBase64("root@vsphere.local", "Root@iaas12321"))
-
 	vc := vcenter.NewVCenter(client, sess)
-
-	if false {
-		/*
-			ds := vc.NewDataStore()
-			dss, err := ds.List()
-			log.Info("DataStores: ", dss, err)
-			log.Info("================================================")
-
-			host := vc.NewHost()
-			hosts, err := host.List()
-			log.Info("Hosts: ", hosts, err)
-			log.Info("================================================")
-
-			vm := vc.NewVM()
-			vms, err := vm.List()
-			log.Info("VMs: ", vms, err)
-			log.Info("================================================")
-
-			vmi, err := vm.Get(vms[0].Vm)
-			log.Info("VMI: ", vmi, err)
-			log.Info("================================================")
-
-			f := vc.NewFolder()
-			folders, err := f.List()
-			log.Info("Folders: ", folders, err)
-			log.Info("================================================")
-
-			c := vc.NewCluster()
-			cs, err := c.List()
-			log.Info("Clusters: ", cs, err)
-			log.Info("================================================")
-
-			r := vc.NewResourcePool()
-			rs, err := r.List()
-			log.Info("ResourcePools: ", rs, err)
-			log.Info("================================================")
-		*/
-
-		//vt := vc.NewVMTemplate().NewLibraryItems().NewItem("10574872-f28b-4f1e-b1a2-aae3a79905d4")
-		vt := vc.NewVMTemplate().NewLibraryItems().NewItem("9893ad34-32d2-4a22-87c4-2e31806abadd")
-		req := &vcenter.VMTemplateDeployReqeust{}
-		req.Spec.Name = "LucyFly"
-		req.Spec.Description = "I am Lucy"
-		req.Spec.PoweredOn = true
-		req.Spec.Placement.ClusterID = "domain-c7"
-		req.Spec.Placement.FolderID = "group-v3"
-		req.Spec.Placement.Host = "host-12"
-		req.Spec.VMHomeStorage = &vcenter.VMTemplateDeployHomeStorage{
-			DataStore: "datastore-60",
-		}
-		/*
-			req.Spec.HardwareCustom = &vcenter.VMTemplateHDCustom{
-				NICs: []vcenter.VMTemplateHDCustomNIC{
-					vcenter.VMTemplateHDCustomNIC{Key: "4003"},
-				},
-			}
-			req.Spec.HardwareCustom.NICs[0].Value.Network = "network-19"
-		*/
-		//req.Spec.VMHomeStorage = nil
-		req.Spec.HardwareCustom = nil
-		vmid, err := vt.Deploy(req)
-		log.Info("vm: ", vmid, err)
-		log.Info("================================================")
-
-		/*
-			p := vm.NewPower(vmid)
-			pi, err := p.Get()
-			log.Info("PowerInfo: ", pi, err)
-			log.Info("================================================")
-			if pi.State == "POWERED_ON" {
-				err = p.Stop()
-				log.Info("Power OFF ", err)
-				log.Info("================================================")
-			}
-
-			err = vm.Delete(vmid)
-			log.Info("delete vm: ", vmid, err)
-			log.Info("================================================")
-		*/
-	}
 
 	nw := vc.NewNetwork()
 	nws, err := nw.List()
 	log.Info("Networks: ", nws, err)
+
+	ds := vc.NewDataStore()
+	dss, err := ds.List()
+	log.Info("DataStores: ", dss, err)
+	log.Info("================================================")
+
+	host := vc.NewHost()
+	hosts, err := host.List()
+	log.Info("Hosts: ", hosts, err)
+	log.Info("================================================")
+
+	vm := vc.NewVM()
+	vms, err := vm.List()
+	log.Info("VMs: ", vms, err)
+	log.Info("================================================")
+
+	vmi, err := vm.Get(vms[0].Vm)
+	log.Info("VMI: ", vmi, err)
+	log.Info("================================================")
+
+	f := vc.NewFolder()
+	folders, err := f.List()
+	log.Info("Folders: ", folders, err)
+	log.Info("================================================")
+
+	c := vc.NewCluster()
+	cs, err := c.List()
+	log.Info("Clusters: ", cs, err)
+	log.Info("================================================")
+
+	r := vc.NewResourcePool()
+	rs, err := r.List()
+	log.Info("ResourcePools: ", rs, err)
+	log.Info("================================================")
+
+	//vt := vc.NewVMTemplate().NewLibraryItems().NewItem("10574872-f28b-4f1e-b1a2-aae3a79905d4")
+	vt := vc.NewVMTemplate().NewLibraryItems().NewItem("9893ad34-32d2-4a22-87c4-2e31806abadd")
+	req := &vcenter.VMTemplateDeployReqeust{}
+	req.Spec.Name = "LucyFly"
+	req.Spec.Description = "I am Lucy"
+	req.Spec.PoweredOn = true
+	req.Spec.Placement.ClusterID = "domain-c7"
+	req.Spec.Placement.FolderID = "group-v3"
+	req.Spec.Placement.Host = "host-12"
+	req.Spec.VMHomeStorage = &vcenter.VMTemplateDeployHomeStorage{
+		DataStore: "datastore-60",
+	}
+	/*
+		req.Spec.HardwareCustom = &vcenter.VMTemplateHDCustom{
+			NICs: []vcenter.VMTemplateHDCustomNIC{
+				vcenter.VMTemplateHDCustomNIC{Key: "4003"},
+			},
+		}
+		req.Spec.HardwareCustom.NICs[0].Value.Network = "network-19"
+	*/
+	//req.Spec.VMHomeStorage = nil
+	req.Spec.HardwareCustom = nil
+	vmid, err := vt.Deploy(req)
+	log.Info("vm: ", vmid, err)
+	log.Info("================================================")
+
+	eth := vc.NewVM().NewHardware(vmid).NewEthernet()
+	nics, err := eth.List()
+	log.Info("Ethernets: ", nics, err)
+	for _, nic := range nics {
+		ni, err := eth.Get(nic.Nic)
+		log.Info("NIC Info: ", ni, " error: ", err)
+	}
+	log.Info("================================================")
+
+	p := vm.NewPower(vmid)
+	pi, err := p.Get()
+	log.Info("PowerInfo: ", pi, err)
+	log.Info("================================================")
+	if pi.State == "POWERED_ON" {
+		err = p.Stop()
+		log.Info("Power OFF ", err)
+		log.Info("================================================")
+	}
+
+	err = vm.Delete(vmid)
+	log.Info("delete vm: ", vmid, err)
 	log.Info("================================================")
 
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
