@@ -29,13 +29,82 @@ type LibraryItems struct {
 func (o *LibraryItems) NewItem(id string) *Item {
 	return &Item{
 		con: o.con,
-		uri: o.uri + "/" + id + "?action=deploy",
+		uri: o.uri + "/" + id,
 	}
 }
 
 type Item struct {
 	con *common.Connector
 	uri string
+}
+
+type VMTemplateHomeStorage struct {
+	DataStore     string `json:"datastore,omitempty"`
+	StoragePolicy string `json:"storage_policy,omitempty"`
+}
+
+type VMTemplateDisk struct {
+	Key   string `json:"key"`
+	Value struct {
+		DiskStorage struct {
+			StoragePolicy string `json:"storage_policy,omitempty"`
+			DataStore     string `json:"datastore,omitempty"`
+		} `json:"disk_storage"`
+		Capacity int `json:"capacity"`
+	} `json:"value"`
+}
+
+type VMTemplateNIC struct {
+	Key   string `json:"key"`
+	Value struct {
+		BackingType string `json:"backing_type"`
+		Network     string `json:"network"`
+		MacType     string `json:"mac_type"`
+	} `json:"Value"`
+}
+
+type VMTemplateMemory struct {
+	SizeMiB int `json:"size_MiB"`
+}
+
+type VMTemplateCPU struct {
+	Count          int `json:"count"`
+	CoresPerSocket int `json:"cores_per_socket"`
+}
+
+type VMTemplateInfo struct {
+	VMTemplateName string                 `json:"vm_template"`
+	Disks          []VMTemplateDisk       `json:"disks,omitempty"`
+	VMHomeStorage  *VMTemplateHomeStorage `json:"vm_home_storage,omitempty"`
+	NICs           []VMTemplateNIC        `json:"nics,omitempty"`
+	Memory         VMTemplateMemory       `json:"memory"`
+	GuestOS        string                 `json:"guest_OS"`
+	CPU            VMTemplateCPU          `json:"cpu"`
+}
+
+type ValueOfVMTemplateInfo struct {
+	Value VMTemplateInfo `json:"value"`
+}
+
+func (o *Item) Get() (*VMTemplateInfo, error) {
+	header := make(map[string]string)
+	header["vmware-api-session-id"] = o.con.Sid
+	header["Content-Type"] = "application/json"
+
+	resp, err := o.con.Invoker.SendRequest(o.uri, header, nil, "GET")
+	if err != nil {
+		log.Error("Item Get SendRequest Error, ", err)
+		return nil, err
+	}
+
+	vtmp := ValueOfVMTemplateInfo{}
+	vtmp.Value.VMHomeStorage = &VMTemplateHomeStorage{}
+	err = json.Unmarshal(resp.Data, &vtmp)
+	if err != nil {
+		log.Error("Item Get Unmarshal Error, ", err)
+		return nil, err
+	}
+	return &(vtmp.Value), err
 }
 
 type VMTemplateDeployHomeStorage struct {
@@ -81,7 +150,8 @@ func (o *Item) Deploy(req *VMTemplateDeployReqeust) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	resp, err := o.con.Invoker.SendRequest(o.uri, header, body, "POST")
+	uri := o.uri + "?action=deploy"
+	resp, err := o.con.Invoker.SendRequest(uri, header, body, "POST")
 	if err != nil {
 		log.Error("Deploy SendRequest Error, ", err)
 		return "", err
