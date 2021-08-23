@@ -113,6 +113,8 @@ func vcenter_test() {
 
 	//vt := vc.NewVMTemplate().NewLibraryItems().NewItem("10574872-f28b-4f1e-b1a2-aae3a79905d4")
 	vt := vc.NewVMTemplate().NewLibraryItems().NewItem("9893ad34-32d2-4a22-87c4-2e31806abadd")
+	vti, err := vt.Get()
+	log.Info("VMTemplate: ", vti, " error: ", err)
 	req := &vcenter.VMTemplateDeployReqeust{}
 	req.Spec.Name = "LucyFly"
 	req.Spec.Description = "I am Lucy"
