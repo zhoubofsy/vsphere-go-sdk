@@ -114,7 +114,7 @@ func vcenter_test() {
 	log.Info("================================================")
 
 	vmid := ""
-	if true {
+	if false {
 		itemID := "7268e7bf-511a-49ca-9772-48447130f1b5"
 		ovf := vc.NewOVF().NewOVFLibraryItem().NewOVFItem(itemID)
 		areq := &vcenter.OVFActionRequest{}
@@ -150,7 +150,7 @@ func vcenter_test() {
 		req := &vcenter.VMTemplateDeployReqeust{}
 		req.Spec.Name = "LucyFly"
 		req.Spec.Description = "I am Lucy"
-		req.Spec.PoweredOn = true
+		req.Spec.PoweredOn = false
 		req.Spec.Placement.ClusterID = "domain-c7"
 		req.Spec.Placement.FolderID = "group-v3"
 		req.Spec.Placement.Host = "host-12"
@@ -173,20 +173,24 @@ func vcenter_test() {
 	}
 
 	eth := vc.NewVM().NewHardware(vmid).NewEthernet()
-	nicreq := &vcenter.CreateEthernetRequest{}
-	nicreq.Spec.Backing.Network = "network-19"
-	nicreq.Spec.Backing.Type = "STANDARD_PORTGROUP"
-	nicreq.Spec.WakeOnLanEnabled = true
-	nicreq.Spec.AllowGuestControl = true
-	nicreq.Spec.StartConnected = true
-	key, err := eth.Create(nicreq)
-	log.Info("NIC key: ", key)
-	log.Info("================================================")
+	/*
+		nicreq := &vcenter.CreateEthernetRequest{}
+		nicreq.Spec.Backing.Network = "network-19"
+		nicreq.Spec.Backing.Type = "STANDARD_PORTGROUP"
+		nicreq.Spec.WakeOnLanEnabled = true
+		nicreq.Spec.AllowGuestControl = true
+		nicreq.Spec.StartConnected = true
+		key, err := eth.Create(nicreq)
+		log.Info("NIC key: ", key)
+		log.Info("================================================")
+	*/
 	nics, err := eth.List()
 	log.Info("Ethernets: ", nics, err)
 	for _, nic := range nics {
 		ni, err := eth.Get(nic.Nic)
 		log.Info("NIC Info: ", ni, " error: ", err)
+		err = eth.Delete(nic.Nic)
+		log.Info("NIC Delete ", nic.Nic, " error: ", err)
 	}
 	log.Info("================================================")
 
