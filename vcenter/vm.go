@@ -425,6 +425,18 @@ func (o *Ethernet) Create(nic *CreateEthernetRequest) (string, error) {
 	return rps.Value, err
 }
 
+func (o *Ethernet) Delete(nic string) error {
+	header := make(map[string]string)
+	header["vmware-api-session-id"] = o.con.Sid
+
+	uri := o.uri + "/" + nic
+	resp, err := o.con.Invoker.SendRequest(uri, header, nil, "DELETE")
+	if err != nil {
+		log.Error("Ethernet Delete SendRequest Error, ", err, " response: ", resp)
+	}
+	return err
+}
+
 /*
 * Disk Operations
  */
