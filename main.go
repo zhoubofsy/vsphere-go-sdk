@@ -92,9 +92,11 @@ func vcenter_test() {
 	log.Info("VMs: ", vms, err)
 	log.Info("================================================")
 
-	vmi, err := vm.Get(vms[0].Vm)
-	log.Info("VMI: ", vmi, err)
-	log.Info("================================================")
+	if len(vms) > 0 {
+		vmi, err := vm.Get(vms[0].Vm)
+		log.Info("VMI: ", vmi, err)
+		log.Info("================================================")
+	}
 
 	f := vc.NewFolder()
 	folders, err := f.List()
@@ -111,35 +113,75 @@ func vcenter_test() {
 	log.Info("ResourcePools: ", rs, err)
 	log.Info("================================================")
 
-	//vt := vc.NewVMTemplate().NewLibraryItems().NewItem("10574872-f28b-4f1e-b1a2-aae3a79905d4")
-	vt := vc.NewVMTemplate().NewLibraryItems().NewItem("9893ad34-32d2-4a22-87c4-2e31806abadd")
-	vti, err := vt.Get()
-	log.Info("VMTemplate: ", vti, " error: ", err)
-	req := &vcenter.VMTemplateDeployReqeust{}
-	req.Spec.Name = "LucyFly"
-	req.Spec.Description = "I am Lucy"
-	req.Spec.PoweredOn = true
-	req.Spec.Placement.ClusterID = "domain-c7"
-	req.Spec.Placement.FolderID = "group-v3"
-	req.Spec.Placement.Host = "host-12"
-	req.Spec.VMHomeStorage = &vcenter.VMTemplateDeployHomeStorage{
-		DataStore: "datastore-60",
-	}
-	/*
-		req.Spec.HardwareCustom = &vcenter.VMTemplateHDCustom{
-			NICs: []vcenter.VMTemplateHDCustomNIC{
-				vcenter.VMTemplateHDCustomNIC{Key: "4003"},
-			},
+	vmid := ""
+	if true {
+		itemID := "7268e7bf-511a-49ca-9772-48447130f1b5"
+		ovf := vc.NewOVF().NewOVFLibraryItem().NewOVFItem(itemID)
+		areq := &vcenter.OVFActionRequest{}
+		areq.OVFLibraryItemID = itemID
+		areq.Target.FolderID = "group-v3"
+		areq.Target.ResourcePoolID = "resgroup-8"
+		info, err := ovf.Get(areq)
+		log.Info("OVF Get: ", info, err)
+		log.Info("================================================")
+		req := &vcenter.OVFDeployRequest{}
+		req.OVFLibraryItemID = itemID
+		req.Target.FolderID = "group-v3"
+		req.Target.ResourcePoolID = "resgroup-8"
+		req.Target.HostID = "host-12"
+		req.DeploymentSpec.Name = "LucyFlyByOVF"
+		req.DeploymentSpec.AcceptAllEULA = true
+		req.DeploymentSpec.DefaultDSID = "datastore-60"
+		vminfo, err := ovf.Deploy(req)
+		log.Info("OVF Deploy: ", vminfo, err)
+		if err == nil {
+			vmid = vminfo.ResourceID.ID
 		}
-		req.Spec.HardwareCustom.NICs[0].Value.Network = "network-19"
-	*/
-	//req.Spec.VMHomeStorage = nil
-	req.Spec.HardwareCustom = nil
-	vmid, err := vt.Deploy(req)
-	log.Info("vm: ", vmid, err)
-	log.Info("================================================")
+		log.Info("================================================")
+		p := vm.NewPower(vmid)
+		err = p.Start()
+		log.Info("Power ON ", err)
+		log.Info("================================================")
+	} else {
+		//vt := vc.NewVMTemplate().NewLibraryItems().NewItem("10574872-f28b-4f1e-b1a2-aae3a79905d4")
+		vt := vc.NewVMTemplate().NewLibraryItems().NewItem("9893ad34-32d2-4a22-87c4-2e31806abadd")
+		vti, err := vt.Get()
+		log.Info("VMTemplate: ", vti, " error: ", err)
+		req := &vcenter.VMTemplateDeployReqeust{}
+		req.Spec.Name = "LucyFly"
+		req.Spec.Description = "I am Lucy"
+		req.Spec.PoweredOn = true
+		req.Spec.Placement.ClusterID = "domain-c7"
+		req.Spec.Placement.FolderID = "group-v3"
+		req.Spec.Placement.Host = "host-12"
+		req.Spec.VMHomeStorage = &vcenter.VMTemplateDeployHomeStorage{
+			DataStore: "datastore-60",
+		}
+		/*
+			req.Spec.HardwareCustom = &vcenter.VMTemplateHDCustom{
+				NICs: []vcenter.VMTemplateHDCustomNIC{
+					vcenter.VMTemplateHDCustomNIC{Key: "4003"},
+				},
+			}
+			req.Spec.HardwareCustom.NICs[0].Value.Network = "network-19"
+		*/
+		//req.Spec.VMHomeStorage = nil
+		req.Spec.HardwareCustom = nil
+		vmid, err = vt.Deploy(req)
+		log.Info("vm: ", vmid, err)
+		log.Info("================================================")
+	}
 
 	eth := vc.NewVM().NewHardware(vmid).NewEthernet()
+	nicreq := &vcenter.CreateEthernetRequest{}
+	nicreq.Spec.Backing.Network = "network-19"
+	nicreq.Spec.Backing.Type = "STANDARD_PORTGROUP"
+	nicreq.Spec.WakeOnLanEnabled = true
+	nicreq.Spec.AllowGuestControl = true
+	nicreq.Spec.StartConnected = true
+	key, err := eth.Create(nicreq)
+	log.Info("NIC key: ", key)
+	log.Info("================================================")
 	nics, err := eth.List()
 	log.Info("Ethernets: ", nics, err)
 	for _, nic := range nics {
@@ -158,9 +200,11 @@ func vcenter_test() {
 		log.Info("================================================")
 	}
 
-	err = vm.Delete(vmid)
-	log.Info("delete vm: ", vmid, err)
-	log.Info("================================================")
+	/*
+		err = vm.Delete(vmid)
+		log.Info("delete vm: ", vmid, err)
+		log.Info("================================================")
+	*/
 
 	err = cis.NewCIS(client).GetSessionHandle().DeleteSession(sess)
 }

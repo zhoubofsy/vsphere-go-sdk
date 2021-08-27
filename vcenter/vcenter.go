@@ -91,3 +91,11 @@ func (o *VCenter) NewHost() *Host {
 	}
 	return r
 }
+
+func (o *VCenter) NewOVF() *OVF {
+	r := &OVF{
+		con: o.con,
+		uri: "com/vmware/vcenter/ovf",
+	}
+	return r
+}

@@ -385,6 +385,46 @@ func (o *Ethernet) Get(nic string) (*NicInfoDetail, error) {
 	return &(vei.Value), err
 }
 
+type CreateEthernetRequest struct {
+	Spec struct {
+		Backing struct {
+			Network string `json:"network"`
+			Type    string `json:"type"`
+		} `json:"backing"`
+		WakeOnLanEnabled  bool `json:"wake_on_lan_enabled"`
+		AllowGuestControl bool `json:"allow_guest_control"`
+		StartConnected    bool `json:"start_connected"`
+	} `json:"spec"`
+}
+
+type ValueOfCreateEthernetResult struct {
+	Value string `json:"value"`
+}
+
+func (o *Ethernet) Create(nic *CreateEthernetRequest) (string, error) {
+	header := make(map[string]string)
+	header["vmware-api-session-id"] = o.con.Sid
+	header["Content-Type"] = "application/json"
+	body, err := json.Marshal(*nic)
+	if err != nil {
+		log.Error("Ethernet Create Marshal error, ", err, " nic: ", *nic)
+		return "", err
+	}
+	resp, err := o.con.Invoker.SendRequest(o.uri, header, body, "POST")
+	if err != nil {
+		log.Error("Ethernet Create SendRequest Error, ", err)
+		return "", err
+	}
+
+	rps := ValueOfCreateEthernetResult{}
+	err = json.Unmarshal(resp.Data, &rps)
+	if err != nil {
+		log.Error("Ethernet Create Unmarshal Error, ", err, " data: ", string(resp.Data))
+		return "", err
+	}
+	return rps.Value, err
+}
+
 /*
 * Disk Operations
  */
