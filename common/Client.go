@@ -23,6 +23,9 @@ type Client interface {
 func NewClient(host string) Client {
 	return NewRESTClient(host, TIMEOUT)
 }
+func NewClientWithTimeout(host string, timeout int) Client {
+	return NewRESTClient(host, timeout)
+}
 
 type HttpClient struct {
 	host       string
